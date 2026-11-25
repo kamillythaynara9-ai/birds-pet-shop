@@ -65,14 +65,6 @@ const CORREDORES = [
   { nome: "Pequenos pets", texto: "Roedores, coelhos, peixes, jabutis e tartarugas: ração, forração, aquário e acessórios.", filtro: "roedores", fotos: ["viva-mini-coelho.jpg", "viva-hamster-sirio-ou-chines.jpg"] }
 ];
 
-// EXEMPLO: serviços do agendamento. Banho e tosa é real (site atual); tipos e tempos, confirmar com o cliente.
-const SERVICOS = [
-  { nome: "Banho", info: "Cães e gatos, com secagem e perfume", tempo: "1 h" },
-  { nome: "Banho e tosa", info: "Tosa na máquina ou na tesoura", tempo: "1 h 30" },
-  { nome: "Tosa higiênica", info: "Patas, barriga e rostinho", tempo: "40 min" }
-];
-const HORAS = ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"];
-
 const GALERIA = [
   ["a-1316295.jpg", "Arara-canindé"], ["a-30518529.jpg", "Casal de agapornis"], ["galeria-cao.jpg", "Cachorro feliz depois do banho"],
   ["a-11961251.jpg", "Calopsita no viveiro"], ["galeria-gato.jpg", "Gatinho"], ["a-17892832.jpg", "Arara-vermelha"],
@@ -412,31 +404,6 @@ $$(".pg-abas button").forEach(b => b.addEventListener("click", () => {
   $("#pg-pix").hidden = b.dataset.pg !== "pix"; $("#pg-cartao").hidden = b.dataset.pg !== "cartao";
 }));
 
-/* ---------- agendamento ---------- */
-let ag = { servico: 0, dia: null, hora: null };
-(function agenda() {
-  $("#servicos").innerHTML = SERVICOS.map((s, i) => `<button type="button" class="opcao ${i === 0 ? "ativa" : ""}" data-s="${i}"><span>${s.nome}<small>${s.info}</small></span><small>${s.tempo}</small></button>`).join("");
-  const dias = []; const d = new Date();
-  while (dias.length < 8) { d.setDate(d.getDate() + 1); if (LOJA.horario[d.getDay()]) dias.push(new Date(d)); }
-  const sem = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
-  $("#dias").innerHTML = dias.map((x, i) => `<button type="button" class="dia" data-d="${x.toISOString().slice(0, 10)}" data-dow="${x.getDay()}"><small>${sem[x.getDay()]}</small>${x.getDate()}/${x.getMonth() + 1}</button>`).join("");
-  const desenharHoras = dow => {
-    const [ini, fim] = LOJA.horario[dow] || [9, 19];
-    const horas = HORAS.filter(h => { const n = parseInt(h, 10); return n >= ini && n < fim; });
-    $("#horas").innerHTML = horas.map(h => `<button type="button" class="hora" data-h="${h}">${h}</button>`).join("");
-  };
-  desenharHoras(dias[0].getDay());
-  $("#servicos").addEventListener("click", e => { const b = e.target.closest("[data-s]"); if (!b) return; ag.servico = +b.dataset.s; $$(".opcao").forEach(x => x.classList.toggle("ativa", x === b)); });
-  $("#dias").addEventListener("click", e => { const b = e.target.closest("[data-d]"); if (!b) return; ag.dia = b.textContent.replace(/^\D+/, ""); ag.diaSem = b.querySelector("small").textContent; $$(".dia").forEach(x => x.classList.toggle("ativa", x === b)); desenharHoras(+b.dataset.dow); ag.hora = null; });
-  $("#horas").addEventListener("click", e => { const b = e.target.closest("[data-h]"); if (!b) return; ag.hora = b.dataset.h; $$(".hora").forEach(x => x.classList.toggle("ativa", x === b)); });
-  $("#form-agendar").addEventListener("submit", e => {
-    e.preventDefault();
-    if (!ag.dia || !ag.hora) { toast("Escolha o dia e o horário"); return; }
-    const msg = `Olá, ${LOJA.curto}! Quero agendar pelo site:\n\nServiço: ${SERVICOS[ag.servico].nome}\nDia: ${ag.diaSem} ${ag.dia}\nHorário: ${ag.hora}\nNome: ${$("#ag-nome").value.trim()}${$("#ag-ave").value.trim() ? `\nPet: ${$("#ag-ave").value.trim()}` : ""}\nUnidade: ${$("#ag-unidade").value}`;
-    window.open(whats(msg), "_blank", "noopener");
-  });
-})();
-
 /* ---------- galeria com foto ampliada ---------- */
 (function galeria() {
   $("#galeria-grade").innerHTML = GALERIA.map(([src, alt]) => src === "video"
@@ -464,7 +431,6 @@ $("#form-contato").addEventListener("submit", e => {
   $("#tel-texto").textContent = LOJA.telefone; $("#tel-texto").href = "tel:+55" + LOJA.telefone.replace(/\D/g, "");
   $("#whats-texto").textContent = LOJA.whatsappTexto;
   $("#email-texto").textContent = LOJA.email; $("#email-texto").href = "mailto:" + LOJA.email;
-  $("#ag-unidade").innerHTML = UNIDADES.map(u => `<option>${u.nome}</option>`).join("");
   // abas das duas lojas: trocam o mapa
   const abas = $("#unidades"), mapa = $("#mapa-frame");
   const mostrar = i => {
