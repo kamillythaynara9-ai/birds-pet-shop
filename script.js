@@ -267,21 +267,53 @@ function irParaLoja(filtro) {
     const b = e.target.closest("[data-dep]"); if (b) irParaLoja(b.dataset.dep);
   });
   if (semMovimento) return;
-  const sec = $("#corredores"), ave = $("#voo-ave"), voo = $(".voo");
-  let pedido = false;
+  const sec = $("#corredores"), ave = $("#voo-ave"), voo = $(".voo"), feito = $("#voo-feito"), dica = $("#voo-dica");
+  let pedido = false, ultimo = null, frente = 1, calma = null;
+  const progresso = () => {
+    const total = sec.offsetHeight - innerHeight;
+    return { total, p: Math.min(1, Math.max(0, -sec.getBoundingClientRect().top / total)) };
+  };
   const mover = () => {
     pedido = false;
-    const r = sec.getBoundingClientRect();
-    const total = sec.offsetHeight - innerHeight;
-    const p = Math.min(1, Math.max(0, -r.top / total));
+    const { p } = progresso();
     const max = trilho.scrollWidth - innerWidth;
     trilho.style.transform = `translate3d(${-p * max}px,0,0)`;
-    const largura = voo.clientWidth - 44;
-    const sobe = Math.sin(p * Math.PI * 6) * 6;
-    ave.style.transform = `translate(${p * largura}px, ${sobe}px) rotate(${Math.cos(p * Math.PI * 6) * 12}deg)`;
+    const largura = voo.clientWidth - ave.offsetWidth;
+    // voa para o lado em que a pessoa está indo, batendo as asas mais rápido enquanto anda
+    if (ultimo !== null && Math.abs(p - ultimo) > .0005) {
+      frente = p > ultimo ? 1 : -1;
+      ave.classList.add("voando");
+      clearTimeout(calma); calma = setTimeout(() => ave.classList.remove("voando"), 260);
+    }
+    ultimo = p;
+    const sobe = Math.sin(p * Math.PI * 6) * 8;
+    const inclina = Math.cos(p * Math.PI * 6) * 8 * frente;
+    ave.style.transform = `translate(${p * largura}px, ${sobe}px) rotate(${inclina}deg) scaleX(${frente})`;
+    feito.style.width = (p * 100) + "%";
+    if (p > .04) dica.classList.add("some");
   };
   addEventListener("scroll", () => { if (!pedido) { pedido = true; requestAnimationFrame(mover); } }, { passive: true });
   addEventListener("resize", mover); mover();
+  // arrastar o passarinho (dedo ou mouse) leva a pessoa pelos corredores
+  let pega = null;
+  ave.addEventListener("pointerdown", e => {
+    e.preventDefault();
+    const r = ave.getBoundingClientRect();
+    pega = { id: e.pointerId, dx: e.clientX - r.left };
+    ave.setPointerCapture(e.pointerId);
+    document.documentElement.style.scrollBehavior = "auto";
+  });
+  ave.addEventListener("pointermove", e => {
+    if (!pega || e.pointerId !== pega.id) return;
+    const caixa = voo.getBoundingClientRect();
+    const largura = caixa.width - ave.offsetWidth;
+    const f = Math.min(1, Math.max(0, (e.clientX - caixa.left - pega.dx) / largura));
+    const { total } = progresso();
+    scrollTo(0, sec.getBoundingClientRect().top + scrollY + f * total);
+  });
+  const soltar = () => { pega = null; document.documentElement.style.scrollBehavior = ""; };
+  ave.addEventListener("pointerup", soltar);
+  ave.addEventListener("pointercancel", soltar);
 })();
 
 /* ---------- animais vivos: escolher o grupo e a loja, conhecer e levar ---------- */
