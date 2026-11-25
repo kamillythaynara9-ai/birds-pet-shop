@@ -108,11 +108,23 @@
 
   <!-- Animais vivos: só na loja física -->
   <section class="vivos secao" id="vivos">
-    <div class="cabeca">
-      <h2>Novos amigos esperam por você na loja</h2>
-      <p class="cabeca-sub">Animais vivos são vendidos só na loja física, para você conhecer e levar com segurança. Não enviamos animais. Consulte a disponibilidade antes de ir.</p>
+    <div class="vivos-topo">
+      <div class="cabeca">
+        <h2>Novos amigos esperam por você na loja</h2>
+        <p class="cabeca-sub">Aves, roedores, coelhos e peixes saudáveis e bem cuidados, para você conhecer pessoalmente e levar para casa com tudo o que eles precisam.</p>
+      </div>
+      <ol class="vivos-passos">
+        <li><span><strong>Escolha</strong> o seu novo amigo aqui no site</span></li>
+        <li><span><strong>Confirme</strong> no WhatsApp se ele está na loja</span></li>
+        <li><span><strong>Venha buscar</strong> e leve o enxoval completo</span></li>
+      </ol>
     </div>
-    <div class="vivos-lista" id="vivos-lista"></div>
+    <div class="vivos-filtros">
+      <div class="vivos-grupos" id="vivos-grupos" role="group" aria-label="Tipo de animal"></div>
+      <div class="vivos-loja"><span>Vou na loja</span><div id="vivos-lojas" role="group" aria-label="Escolha a loja"></div></div>
+    </div>
+    <div class="vivos-lista" id="vivos-lista" aria-live="polite"></div>
+    <p class="vivos-aviso">Animais vivos são vendidos só na loja física, nunca enviados. Cores, idade e sexo variam conforme a disponibilidade, e as fotos são ilustrativas.</p>
   </section>
 
   <!-- Galeria -->
@@ -152,6 +164,7 @@
         <div><dt>WhatsApp</dt><dd><a href="#" id="whats-texto" data-whats="Olá! Vim pelo site da Bird.">(11) 97766-4646</a></dd></div>
       </dl>
       <div class="unidades" id="unidades" role="group" aria-label="Escolha a loja"></div>
+      <p class="endereco" id="endereco-texto"></p>
       <div class="mapa">
         <iframe id="mapa-frame" title="Mapa da loja" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="about:blank"></iframe>
       </div>

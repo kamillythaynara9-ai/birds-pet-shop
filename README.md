@@ -15,7 +15,7 @@ Em 25/11/2026 o protótipo recebeu os dados reais do site atual da loja (birdpet
 ## O que é exemplo e precisa confirmar ou trocar
 - WhatsApp: o formulário trouxe (11) 97766-4646 e o site atual mostra (11) 96035-8956. Hoje o botão usa o do formulário (LOJA.whatsapp).
 - Horário de funcionamento (LOJA.horario e LOJA.horarioTexto).
-- Endereço exato das duas lojas (UNIDADES).
+- Endereços (UNIDADES): vieram de cadastros públicos (CNPJ). Ipiranga, Rua Almirante Mariath 115 (um guia diz 120), e Vila Independência, Rua Aída 288. Confirmar.
 - Fotos de cães, gatos, banho e tosa e das aves no topo: banco Pexels (licença livre). Trocar pelas fotos das lojas.
 - Vídeo da galeria (espaço marcado) e depoimentos (espaço marcado).
 - Pagamento online: tela de exemplo.
@@ -26,3 +26,4 @@ Em 25/11/2026 o protótipo recebeu os dados reais do site atual da loja (birdpet
 - Cores e fontes: variáveis no :root do `styles.css` (com versão para modo escuro).
 - Link: https://birds-pet-shop.vercel.app (repositório kamillythaynara9-ai/birds-pet-shop).
 - Agendamento de banho e tosa: tirado (o site atual não tem). Pode entrar depois como proposta de sistema.
+- Animais vivos (ANIMAIS no script.js): mesmos 6 do site atual, por grupo, com escolha da loja. Confirmar se as duas lojas têm os mesmos animais e se há outros (canário, mandarim, peixes etc.).
