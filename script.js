@@ -155,10 +155,10 @@ document.addEventListener("pointerdown", e => {
 (function colunas() {
   const box = $("#hero-colunas");
   const embaralhado = [...FOTOS_TOPO].sort(() => Math.random() - .5);
-  for (let c = 0; c < 3; c++) {
+  for (let c = 0; c < 5; c++) {
     const col = document.createElement("div"); col.className = "coluna";
     const trilha = document.createElement("div"); trilha.className = "coluna-trilha";
-    const fotos = embaralhado.filter((_, i) => i % 3 === c);
+    const fotos = embaralhado.filter((_, i) => i % 5 === c);
     const html = fotos.map(([src, nome], i) =>
       `<figure><img src="${src}" alt="${nome}" ${c === 1 && i === 0 ? "" : 'loading="lazy"'} width="300" height="400"><figcaption>${nome}</figcaption></figure>`).join("");
     trilha.innerHTML = html + html; // duas vezes para o laço sem emenda
@@ -322,9 +322,8 @@ let atual = null, qtd = 1, ultimoFoco = null;
 function abrirProduto(id) {
   atual = acharProduto(id); qtd = 1; ultimoFoco = document.activeElement;
   $("#mp-img").src = atual.foto; $("#mp-img").alt = atual.nome;
-  $("#mp-dep").textContent = nomeDep(atual.dep) + (atual.sub ? " · " + atual.sub : "");
   $("#mp-nome").textContent = atual.nome; $("#mp-desc").textContent = atual.desc || "Fale com a gente no WhatsApp para saber mais sobre este produto.";
-  $("#mp-ideal").innerHTML = `${atual.marca ? `<span>Marca: <strong>${atual.marca}</strong></span>` : ""}<span>Cód. ${atual.cod}</span><span class="estoque ${atual.estoque}">${atual.estoque === "pronta" ? "Pronta entrega" : "Sob encomenda · 3 dias úteis"}</span>`;
+  $("#mp-ideal").innerHTML = `<span>${nomeDep(atual.dep)}${atual.sub ? " · " + atual.sub : ""}</span>${atual.marca ? `<span>Marca: <strong>${atual.marca}</strong></span>` : ""}<span>Cód. ${atual.cod}</span><span class="estoque ${atual.estoque}">${atual.estoque === "pronta" ? "Pronta entrega" : "Sob encomenda · 3 dias úteis"}</span>`;
   atualizarModal();
   $("#modal-produto").hidden = false; document.body.classList.add("travado");
   $("#modal-produto .fechar").focus();

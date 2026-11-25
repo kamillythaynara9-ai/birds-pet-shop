@@ -171,8 +171,8 @@ h2 { font-size: clamp(2rem, 5.5vw, 3.6rem); font-weight: 800; }
 /* Primeira tela */
 .hero {
   position: relative; min-height: 100svh; overflow: hidden; color: #fff;
-  display: grid; grid-template-columns: 1.05fr 1fr; align-items: center; gap: 2rem;
-  padding: 7rem clamp(1rem, 5vw, 4rem) 3rem;
+  display: grid; grid-template-columns: 1fr; align-items: center;
+  padding: 7rem clamp(1rem, 5vw, 4rem) 4rem;
   background:
     radial-gradient(60% 50% at 15% 20%, rgba(253, 206, 2, .28), transparent 70%),
     radial-gradient(50% 60% at 90% 90%, rgba(90, 165, 20, .35), transparent 70%),
@@ -183,8 +183,14 @@ h2 { font-size: clamp(2rem, 5.5vw, 3.6rem); font-weight: 800; }
   content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .18; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-.hero-texto { position: relative; z-index: 2; max-width: 620px; }
-.hero .rotulo { color: var(--amarelo); }
+.hero-texto { position: relative; z-index: 3; max-width: 640px; }
+/* véu azul por cima das fotos para o título ficar legível */
+.hero::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(95deg, rgba(3, 64, 106, .94) 0%, rgba(4, 117, 185, .82) 45%, rgba(4, 117, 185, .45) 100%),
+    linear-gradient(0deg, rgba(3, 64, 106, .7), transparent 40%);
+}
 .hero h1 { font-size: clamp(2.6rem, 7vw, 5.4rem); font-weight: 800; margin-bottom: 1.2rem; }
 .hero h1 em {
   font-style: normal; display: inline-block;
@@ -195,14 +201,12 @@ h2 { font-size: clamp(2rem, 5.5vw, 3.6rem); font-weight: 800; }
 @keyframes brilho { to { background-position: 100% 0; } }
 .hero-sub { font-size: clamp(1rem, 2vw, 1.15rem); opacity: .92; max-width: 34rem; margin-bottom: 2rem; }
 .hero-botoes { display: flex; flex-wrap: wrap; gap: .8rem; }
-.hero-piada { margin-top: 1.4rem; font-size: .9rem; opacity: .75; }
 
+/* fotos passando como fundo da primeira tela, atrás do título */
 .hero-colunas {
-  position: relative; z-index: 1; height: 82vh; max-height: 760px;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-  -webkit-mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
-  mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
-  transform: rotate(-4deg);
+  position: absolute; z-index: 0; inset: -12% -6%;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+  transform: rotate(-6deg);
 }
 .coluna { overflow: hidden; position: relative; }
 .coluna-trilha { display: flex; flex-direction: column; gap: 14px; animation: sobe 38s linear infinite; }
@@ -222,7 +226,7 @@ h2 { font-size: clamp(2rem, 5.5vw, 3.6rem); font-weight: 800; }
 }
 .coluna figure:hover figcaption { opacity: 1; transform: translate(-50%, 0); }
 
-.penas { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+.penas { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
 .penas svg { position: absolute; top: -60px; opacity: .55; animation: flutua linear infinite; }
 @keyframes flutua {
   0% { transform: translate(0, -60px) rotate(0); }
@@ -233,8 +237,10 @@ h2 { font-size: clamp(2rem, 5.5vw, 3.6rem); font-weight: 800; }
 }
 
 @media (max-width: 860px) {
-  .hero { grid-template-columns: 1fr; padding-top: 6.5rem; gap: 2.5rem; border-radius: 0 0 32px 32px; }
-  .hero-colunas { height: 58vh; transform: rotate(-3deg) scale(1.08); }
+  .hero { padding-top: 6.5rem; border-radius: 0 0 32px 32px; align-items: end; }
+  .hero-colunas { grid-template-columns: repeat(3, 1fr); inset: -8% -14%; }
+  .hero-colunas .coluna:nth-child(n+4) { display: none; }
+  .hero::before { background: linear-gradient(180deg, rgba(3, 64, 106, .35) 0%, rgba(3, 64, 106, .7) 40%, rgba(3, 64, 106, .95) 100%); }
 }
 
 /* Espécies */
@@ -306,6 +312,18 @@ h2 { font-size: clamp(2rem, 5.5vw, 3.6rem); font-weight: 800; }
 .filtro-ave button { background: var(--ceu); border-radius: 999px; padding: .3rem .8rem; font-size: .85rem; font-weight: 700; }
 
 .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: clamp(1rem, 2.4vw, 1.8rem); }
+/* celular: 2 produtos por linha */
+@media (max-width: 600px) {
+  .grade { grid-template-columns: repeat(2, 1fr); gap: .8rem; }
+  .produto { border-radius: 22px; }
+  .produto-info { padding: .7rem .8rem .9rem; gap: .2rem; }
+  .produto-info small { font-size: .62rem; letter-spacing: .06em; }
+  .produto-info h3 { font-size: .86rem; }
+  .produto .preco { font-size: 1.05rem; }
+  .add-rapido { width: 38px; height: 38px; font-size: 1.25rem; }
+  .selo-ave { top: 8px; left: 8px; font-size: .6rem; padding: .2rem .55rem; }
+  .selo-estoque { bottom: 8px; right: 8px; font-size: .58rem; padding: .18rem .5rem; }
+}
 .produto {
   background: var(--cartao); border-radius: var(--raio); box-shadow: var(--sombra); overflow: hidden;
   display: flex; flex-direction: column; text-align: left; transition: transform .5s var(--mola), box-shadow .4s;
