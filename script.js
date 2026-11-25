@@ -20,9 +20,40 @@ const LOJA = {
 };
 
 // As duas lojas reais. O endereço exato entra quando o cliente mandar (o mapa busca pelo nome e bairro).
+// Endereços de cadastros públicos da empresa (CNPJ matriz e filial). CONFIRMAR com o cliente:
+// o número da loja do Ipiranga aparece como 115 no CNPJ e 120 em um guia.
 const UNIDADES = [
-  { nome: "Ipiranga", mapa: "Bird Pet Shop Ipiranga, São Paulo SP" },
-  { nome: "Vila Independência", mapa: "Bird Pet Shop Vila Independência, São Paulo SP" }
+  { nome: "Ipiranga", endereco: "Rua Almirante Mariath, 115 · Ipiranga", mapa: "Rua Almirante Mariath, 115, Ipiranga, São Paulo SP" },
+  { nome: "Vila Independência", endereco: "Rua Aída, 288 · Vila Independência", mapa: "Rua Aída, 288, Vila Independência, São Paulo SP" }
+];
+
+// Animais vivos do site atual (preço e texto reais), só para conhecer e levar na loja.
+// grupo: aves, pequenos ou peixes. kit = o que abre na loja em "Montar o enxoval".
+// CONFIRMAR com o cliente se as duas lojas têm os mesmos animais.
+const GRUPOS_ANIMAIS = [
+  { id: "aves", nome: "Aves" },
+  { id: "pequenos", nome: "Roedores e coelhos" },
+  { id: "peixes", nome: "Peixes" }
+];
+const ANIMAIS = [
+  { id: "calopsita-comum", grupo: "aves", nome: "Calopsita", foto: "a-7154573.jpg", pos: "50% 8%",
+    frase: "Dócil, inteligente e muito companheira. Com carinho, aprende assobios e pequenos sons.",
+    tracos: ["Dócil", "Assobia", "Para a família"], come: "Ração extrusada para calopsita, sementes e frutas permitidas.", kit: { busca: "calopsita" } },
+  { id: "agapornis", grupo: "aves", nome: "Agapórnis", foto: "a-30518529.jpg",
+    frase: "Pequeno, colorido e cheio de personalidade. Sociável, curioso e muito ativo.",
+    tracos: ["Colorido", "Curioso", "Pequeno porte"], come: "Ração extrusada para psitacídeos pequenos, sementes, frutas e verduras.", kit: { busca: "agapor" } },
+  { id: "periquito-australiano", grupo: "aves", nome: "Periquito australiano", foto: "a-28914189.jpg",
+    frase: "Alegre, sociável e fácil de cuidar. Ótima primeira ave para a família.",
+    tracos: ["Alegre", "Fácil de cuidar", "Pequeno porte"], come: "Ração extrusada para periquitos, sementes, frutas e verduras.", kit: { busca: "periquito" } },
+  { id: "mini-coelho", grupo: "pequenos", nome: "Mini coelho", foto: "viva-mini-coelho.jpg",
+    frase: "Dócil, carinhoso e tranquilo. Se adapta muito bem ao convívio da casa.",
+    tracos: ["Dócil", "Tranquilo", "Carinhoso"], come: "Feno à vontade, ração para coelhos, verduras e legumes permitidos.", kit: { dep: "roedores" } },
+  { id: "hamster-sirio-ou-chines", grupo: "pequenos", nome: "Hamster sírio ou chinês", foto: "viva-hamster-sirio-ou-chines.jpg",
+    frase: "Curioso e ativo, adora explorar e correr. Fácil de cuidar com o ambiente certo.",
+    tracos: ["Curioso", "Ativo", "Pouco espaço"], come: "Ração para hamster e alimentos permitidos para a espécie.", kit: { busca: "hamster" } },
+  { id: "peixe-betta", grupo: "peixes", nome: "Peixe betta", foto: "viva-peixe-betta.jpg",
+    frase: "Cores vibrantes e nadadeiras lindas. Vive bem em aquário individual bem cuidado.",
+    tracos: ["Colorido", "Aquário individual", "Água doce"], come: "Ração própria para betta, em pouca quantidade.", kit: { busca: "betta" } }
 ];
 
 // Fotos da primeira tela: aves (Pexels, licença livre) e os animais da própria loja (site atual).
@@ -124,9 +155,10 @@ btnMenu.addEventListener("click", () => {
   const aberto = menu.classList.toggle("aberto");
   btnMenu.setAttribute("aria-expanded", aberto);
   document.body.classList.toggle("travado", aberto);
+  document.body.classList.toggle("menu-aberto", aberto);
 });
 $$("a", menu).forEach(a => a.addEventListener("click", () => {
-  menu.classList.remove("aberto"); btnMenu.setAttribute("aria-expanded", "false"); document.body.classList.remove("travado");
+  menu.classList.remove("aberto"); btnMenu.setAttribute("aria-expanded", "false"); document.body.classList.remove("travado", "menu-aberto");
 }));
 
 /* ---------- botões soltam penas ao toque ---------- */
@@ -227,18 +259,45 @@ function irParaLoja(filtro) {
   addEventListener("resize", mover); mover();
 })();
 
-/* ---------- animais vivos: só na loja física ---------- */
+/* ---------- animais vivos: escolher o grupo e a loja, conhecer e levar ---------- */
 (function vivos() {
-  const lista = PRODUTOS.filter(p => p.dep === "vivos");
-  $("#vivos-lista").innerHTML = lista.map(p => {
-    const foto = "viva-" + p.id + ".jpg";
-    return `<article class="vivo">
-      <div class="vivo-foto${["agapornis", "periquito-australiano", "calopsita-comum"].includes(p.id) ? " recorte" : ""}"><img src="${foto}" alt="${p.nome}" loading="lazy" width="400" height="300"></div>
-      <h3>${p.nome}</h3>
-      <p class="vivo-preco">${reais(p.preco)}</p>
-      <a class="btn btn-linha" href="${whats(`Olá, ${LOJA.curto}! Vi no site: ${p.nome}. Tem disponível para eu conhecer na loja?`)}" target="_blank" rel="noopener">Consultar disponibilidade</a>
-    </article>`;
-  }).join("");
+  let grupo = "aves", loja = 0;
+  const preco = id => (PRODUTOS.find(p => p.id === id) || {}).preco;
+  const desenharGrupos = () => {
+    $("#vivos-grupos").innerHTML = GRUPOS_ANIMAIS.map(g => {
+      const n = ANIMAIS.filter(a => a.grupo === g.id).length;
+      return `<button type="button" class="${g.id === grupo ? "ativa" : ""}" data-g="${g.id}" aria-pressed="${g.id === grupo}">${g.nome}<small>${n}</small></button>`;
+    }).join("");
+    $("#vivos-lojas").innerHTML = UNIDADES.map((u, i) => `<button type="button" class="${i === loja ? "ativa" : ""}" data-l="${i}" aria-pressed="${i === loja}">${u.nome}</button>`).join("");
+  };
+  const desenhar = () => {
+    const unidade = UNIDADES[loja].nome;
+    $("#vivos-lista").innerHTML = ANIMAIS.filter(a => a.grupo === grupo).map((a, i) => `
+      <article class="vivo" style="--i:${i}">
+        <div class="vivo-foto"><img src="${a.foto}" alt="${a.nome}" loading="lazy" width="500" height="500"${a.pos ? ` style="object-position:${a.pos}"` : ""}><span class="vivo-preco">${reais(preco(a.id))}</span></div>
+        <div class="vivo-corpo">
+          <h3>${a.nome}</h3>
+          <p>${a.frase}</p>
+          <ul class="vivo-tracos">${a.tracos.map(t => `<li>${t}</li>`).join("")}</ul>
+          <p class="vivo-come"><strong>Alimentação:</strong> ${a.come}</p>
+          <div class="vivo-acoes">
+            <a class="btn btn-sol" href="${whats(`Olá, ${LOJA.curto}! Vi no site: ${a.nome}. Tem disponível na loja ${unidade}? Quero ir conhecer.`)}" target="_blank" rel="noopener">Quero conhecer</a>
+            <button type="button" class="btn btn-linha" data-kit="${a.id}">Montar o enxoval</button>
+          </div>
+        </div>
+      </article>`).join("");
+  };
+  $("#vivos-grupos").addEventListener("click", e => { const b = e.target.closest("[data-g]"); if (!b) return; grupo = b.dataset.g; desenharGrupos(); desenhar(); });
+  $("#vivos-lojas").addEventListener("click", e => { const b = e.target.closest("[data-l]"); if (!b) return; loja = +b.dataset.l; desenharGrupos(); desenhar(); });
+  $("#vivos-lista").addEventListener("click", e => {
+    const b = e.target.closest("[data-kit]"); if (!b) return;
+    const k = ANIMAIS.find(a => a.id === b.dataset.kit).kit;
+    if (k.dep) { busca = ""; $("#busca").value = ""; irParaLoja(k.dep); return; }
+    depFiltro = "todos"; subFiltro = null; limite = POR_PAGINA; busca = k.busca; $("#busca").value = k.busca;
+    $$(".especie").forEach(x => x.classList.remove("ativa")); desenharPilulas(); desenharLoja();
+    $("#loja").scrollIntoView({ behavior: semMovimento ? "auto" : "smooth" });
+  });
+  desenharGrupos(); desenhar();
 })();
 
 /* ---------- loja ---------- */
@@ -435,7 +494,8 @@ $("#form-contato").addEventListener("submit", e => {
   const abas = $("#unidades"), mapa = $("#mapa-frame");
   const mostrar = i => {
     $$("button", abas).forEach((b, j) => { b.classList.toggle("ativa", i === j); b.setAttribute("aria-pressed", i === j); });
-    mapa.src = "https://maps.google.com/maps?q=" + encodeURIComponent(UNIDADES[i].mapa) + "&z=15&output=embed";
+    mapa.src = "https://maps.google.com/maps?q=" + encodeURIComponent(UNIDADES[i].mapa) + "&z=16&output=embed";
+    $("#endereco-texto").textContent = UNIDADES[i].endereco;
     mapa.title = "Mapa da loja " + UNIDADES[i].nome;
   };
   abas.innerHTML = UNIDADES.map((u, i) => `<button type="button" data-u="${i}">Loja ${u.nome}</button>`).join("");
