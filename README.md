@@ -15,7 +15,6 @@ Em 25/11/2026 o protótipo recebeu os dados reais do site atual da loja (birdpet
 ## O que é exemplo e precisa confirmar ou trocar
 - WhatsApp: o formulário trouxe (11) 97766-4646 e o site atual mostra (11) 96035-8956. Hoje o botão usa o do formulário (LOJA.whatsapp).
 - Horário de funcionamento (LOJA.horario e LOJA.horarioTexto).
-- Tipos e tempos do banho e tosa (SERVICOS) e horários (HORAS).
 - Endereço exato das duas lojas (UNIDADES).
 - Fotos de cães, gatos, banho e tosa e das aves no topo: banco Pexels (licença livre). Trocar pelas fotos das lojas.
 - Vídeo da galeria (espaço marcado) e depoimentos (espaço marcado).
@@ -23,6 +22,7 @@ Em 25/11/2026 o protótipo recebeu os dados reais do site atual da loja (birdpet
 
 ## Onde mexer
 - Catálogo: `produtos.js` (dep = departamento, sub = subcategoria, estoque = "pronta" ou "encomenda", torneio = linha torneio).
-- Conteúdo: LOJA, UNIDADES, FOTOS_TOPO, PETS, DEPARTAMENTOS, CORREDORES, SERVICOS, GALERIA no topo do `script.js`.
+- Conteúdo: LOJA, UNIDADES, FOTOS_TOPO, PETS, DEPARTAMENTOS, CORREDORES, GALERIA no topo do `script.js`.
 - Cores e fontes: variáveis no :root do `styles.css` (com versão para modo escuro).
 - Link: https://birds-pet-shop.vercel.app (repositório kamillythaynara9-ai/birds-pet-shop).
+- Agendamento de banho e tosa: tirado (o site atual não tem). Pode entrar depois como proposta de sistema.

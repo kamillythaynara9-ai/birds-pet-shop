@@ -39,7 +39,6 @@
   <nav class="menu" id="menu" aria-label="Seções">
     <a href="#corredores">Corredores</a>
     <a href="#loja">Loja</a>
-    <a href="#agendar">Banho e tosa</a>
     <a href="#vivos">Animais</a>
     <a href="#contato">Lojas</a>
   </nav>
@@ -105,33 +104,6 @@
     <div class="grade" id="grade"></div>
     <button class="btn btn-linha ver-mais" id="ver-mais" type="button" hidden>Ver mais</button>
     <p class="vazio" id="vazio" hidden>Nada encontrado. Tente outra palavra ou fale com a gente no WhatsApp.</p>
-  </section>
-
-  <!-- Agendamento -->
-  <section class="agendar secao" id="agendar">
-    <div class="agendar-texto">
-      <h2>Seu pet cheiroso, sem fila</h2>
-      <p>Banho e tosa nas duas lojas. Escolha o serviço, a loja, o dia e o horário. A gente confirma pelo WhatsApp.</p>
-      <img class="agendar-foto" src="banho-tosa.jpg" alt="Cachorro sendo tosado com tesoura" loading="lazy" width="600" height="600">
-    </div>
-    <form class="agendar-form" id="form-agendar">
-      <fieldset>
-        <legend>1. Serviço</legend>
-        <div class="opcoes" id="servicos"></div>
-      </fieldset>
-      <fieldset>
-        <legend>2. Dia</legend>
-        <div class="dias" id="dias"></div>
-      </fieldset>
-      <fieldset>
-        <legend>3. Horário</legend>
-        <div class="horas" id="horas"></div>
-      </fieldset>
-      <label class="campo">Seu nome<input id="ag-nome" required autocomplete="name"></label>
-      <label class="campo">Loja<select id="ag-unidade"></select></label>
-      <label class="campo">Qual é o pet?<input id="ag-ave" placeholder="Ex.: shih-tzu, porte pequeno"></label>
-      <button class="btn btn-azul" type="submit">Pedir horário no WhatsApp</button>
-    </form>
   </section>
 
   <!-- Animais vivos: só na loja física -->
