@@ -13,7 +13,7 @@ Em 25/11/2026 o protótipo recebeu os dados reais do site atual da loja (birdpet
 - Linha torneio (curió, coleiro, trinca-ferro, bicudo, azulão) marcada nos produtos.
 
 ## O que é exemplo e precisa confirmar ou trocar
-- WhatsApp: o formulário trouxe (11) 97766-4646 e o site atual mostra (11) 96035-8956. Hoje o botão usa o do formulário (LOJA.whatsapp).
+- WhatsApp e telefone: (11) 96035-8956, o do site atual (25/11). O formulário tinha trazido (11) 97766-4646.
 - Horário de funcionamento (LOJA.horario e LOJA.horarioTexto).
 - Endereços (UNIDADES): vieram de cadastros públicos (CNPJ). Ipiranga, Rua Almirante Mariath 115 (um guia diz 120), e Vila Independência, Rua Aída 288. Confirmar.
 - Fotos de cães, gatos, banho e tosa e das aves no topo: banco Pexels (licença livre). Trocar pelas fotos das lojas.

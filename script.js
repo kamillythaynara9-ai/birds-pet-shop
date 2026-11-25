@@ -5,9 +5,9 @@
 const LOJA = {
   nome: "Bird Pet Shop & Avicultura",
   curto: "Bird",
-  // CONFIRMAR: o formulário trouxe (11) 97766-4646; o site atual mostra (11) 96035-8956 como telefone e WhatsApp.
-  whatsapp: "5511977664646",
-  whatsappTexto: "(11) 97766-4646",
+  // WhatsApp e telefone do site atual da loja (birdpetshop.com.br): o mesmo número.
+  whatsapp: "5511960358956",
+  whatsappTexto: "(11) 96035-8956",
   telefone: "(11) 96035-8956",
   email: "petshopbird@gmail.com",
   instagram: "petshopbird",
