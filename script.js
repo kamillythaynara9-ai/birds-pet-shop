@@ -1,70 +1,82 @@
-/* Birds Pet Shop · protótipo DERS
-   Conteúdo que muda fica nos dados abaixo: troque pelos materiais do cliente sem mexer no design. */
+/* Bird Pet Shop & Avicultura · protótipo DERS
+   Conteúdo que muda fica nos dados abaixo (e o catálogo em produtos.js): troque pelos materiais do cliente sem mexer no design.
+   Dados reais tirados do site birdpetshop.com.br em 25/11/2026. */
 
 const LOJA = {
-  nome: "Birds Pet Shop",
+  nome: "Bird Pet Shop & Avicultura",
+  curto: "Bird",
+  // CONFIRMAR: o formulário trouxe (11) 97766-4646; o site atual mostra (11) 96035-8956 como telefone e WhatsApp.
   whatsapp: "5511977664646",
+  whatsappTexto: "(11) 97766-4646",
+  telefone: "(11) 96035-8956",
+  email: "petshopbird@gmail.com",
   instagram: "petshopbird",
+  cnpj: "40.830.252/0001-62",
+  razao: "Distribuidora Bird Pet Shop e Avicultura Ltda",
+  entrega: "Delivery para toda a cidade de São Paulo, região do ABCD e arredores",
   // EXEMPLO: confirmar o horário real com o cliente (0 = domingo)
   horario: { 1: [9, 19], 2: [9, 19], 3: [9, 19], 4: [9, 19], 5: [9, 19], 6: [9, 15] },
   horarioTexto: "Seg a sex 9h às 19h · Sáb 9h às 15h"
 };
 
-// Fotos da primeira tela (banco de imagens Pexels, licença livre). Trocar pelas fotos da loja.
+// As duas lojas reais. O endereço exato entra quando o cliente mandar (o mapa busca pelo nome e bairro).
+const UNIDADES = [
+  { nome: "Ipiranga", mapa: "Bird Pet Shop Ipiranga, São Paulo SP" },
+  { nome: "Vila Independência", mapa: "Bird Pet Shop Vila Independência, São Paulo SP" }
+];
+
+// Fotos da primeira tela: aves (Pexels, licença livre) e os animais da própria loja (site atual).
 const FOTOS_TOPO = [
-  ["a-1316295.jpg", "Arara-canindé"], ["a-7154573.jpg", "Calopsita"], ["a-28914189.jpg", "Periquito"],
-  ["a-30518529.jpg", "Agapornis"], ["a-6398822.jpg", "Canário"], ["a-15314598.jpg", "Arara-vermelha"],
-  ["a-10252685.jpg", "Calopsita"], ["a-13550346.jpg", "Periquitos"], ["a-17052115.jpg", "Tiriba"],
-  ["a-16147936.jpg", "Periquito"], ["a-17892832.jpg", "Arara-vermelha"], ["a-625419.jpg", "Canário"],
-  ["a-8838179.jpg", "Periquito"], ["a-11961251.jpg", "Calopsita"], ["a-33953128.jpg", "Calopsitas"]
+  ["a-1316295.jpg", "Arara-canindé"], ["a-13550346.jpg", "Periquitos"], ["a-28914189.jpg", "Periquito"],
+  ["a-30518529.jpg", "Agapornis"], ["pet-cao.jpg", "Cães"], ["a-6398822.jpg", "Canário"],
+  ["viva-mini-coelho.jpg", "Mini coelho"], ["a-10252685.jpg", "Calopsita"], ["pet-gato.jpg", "Gatos"],
+  ["a-16147936.jpg", "Periquito"], ["a-8838179.jpg", "Periquito"], ["a-625419.jpg", "Canário"],
+  ["viva-hamster-sirio-ou-chines.jpg", "Hamster"], ["a-11961251.jpg", "Calopsita"], ["a-33953128.jpg", "Calopsitas"]
 ];
 
-const ESPECIES = [
-  { id: "calopsita", nome: "Calopsita", foto: "a-7154573.jpg" },
-  { id: "periquito", nome: "Periquito", foto: "a-28914189.jpg" },
-  { id: "canario", nome: "Canário", foto: "a-6398822.jpg" },
-  { id: "agapornis", nome: "Agapornis", foto: "a-30518529.jpg" },
-  { id: "papagaio", nome: "Papagaio e arara", foto: "a-1316295.jpg" },
-  { id: "mandarim", nome: "Mandarim e pequenos", foto: "a-625419.jpg" }
+// "Qual é o seu pet?": cada um filtra a loja pelo departamento.
+const PETS = [
+  { id: "aves", nome: "Aves", foto: "a-7154573.jpg" },
+  { id: "caes", nome: "Cães", foto: "pet-cao.jpg" },
+  { id: "gatos", nome: "Gatos", foto: "pet-gato.jpg" },
+  { id: "roedores", nome: "Roedores e coelhos", foto: "viva-mini-coelho.jpg" },
+  { id: "peixes", nome: "Peixes", foto: "viva-peixe-betta.jpg" },
+  { id: "repteis", nome: "Jabutis e tartarugas", foto: "prod-alcon-club-repteis-jabuti-300g.jpg" }
 ];
 
+// Departamentos da loja (pílulas do catálogo). "vivos" fica fora: animais vivos só na loja física.
 const DEPARTAMENTOS = [
-  { id: "alimentacao", nome: "Alimentação", texto: "Misturas de sementes, rações e petiscos certos para cada espécie.", fotos: ["p-sementes-calopsita.jpg", "a-17052115.jpg"] },
-  { id: "gaiolas", nome: "Gaiolas e viveiros", texto: "Do canário ao papagaio: tamanho, grade e porta certos para cada ave.", fotos: ["p-gaiola-classica.jpg", "a-16147936.jpg"] },
-  { id: "poleiros", nome: "Poleiros", texto: "Galho natural e madeira para o pé descansar e o bico gastar.", fotos: ["p-poleiro-natural.jpg", "p-poleiro-arara.jpg"] },
-  { id: "ninhos", nome: "Ninhos", texto: "Caixas de madeira e ninhos para reprodução tranquila.", fotos: ["p-ninho-madeira.jpg", "a-30518529.jpg"] },
-  { id: "brinquedos", nome: "Brinquedos", texto: "Balanços e brinquedos para a ave não ficar entediada.", fotos: ["p-balanco.jpg", "a-13550346.jpg"] },
-  { id: "comedouros", nome: "Comedouros", texto: "Comedouros e bebedouros práticos de limpar e encher.", fotos: ["p-comedouro-tubo.jpg", "a-10502515.jpg"] }
+  { id: "aves", nome: "Pássaros" },
+  { id: "gaiolas", nome: "Gaiolas" },
+  { id: "caes", nome: "Cães" },
+  { id: "gatos", nome: "Gatos" },
+  { id: "roedores", nome: "Roedores" },
+  { id: "peixes", nome: "Peixes" },
+  { id: "repteis", nome: "Répteis" }
 ];
 
-// EXEMPLO: produtos e preços para mostrar o catálogo. Trocar pela lista real da loja.
-const PRODUTOS = [
-  { id: "sementes-calopsita", nome: "Mistura de sementes para calopsita", dep: "alimentacao", aves: ["calopsita"], preco: 24.9, foto: "p-sementes-calopsita.jpg", desc: "Girassol, painço, alpiste e aveia na medida para calopsitas.", opcoes: ["500 g", "1 kg", "5 kg"] },
-  { id: "mix-premium", nome: "Mix premium de sementes", dep: "alimentacao", aves: ["periquito", "agapornis", "calopsita"], preco: 34.9, foto: "p-mix-premium.jpg", desc: "Sementes selecionadas com milho e girassol para psitacídeos pequenos e médios.", opcoes: ["1 kg", "3 kg"] },
-  { id: "comedouro-tubo", nome: "Comedouro tubo pendurado", dep: "comedouros", aves: ["canario", "mandarim", "periquito"], preco: 29.9, foto: "p-comedouro-tubo.jpg", desc: "Comedouro de tubo com poleiro, fácil de encher e de limpar.", opcoes: ["Pequeno", "Médio"] },
-  { id: "gaiola-classica", nome: "Gaiola clássica branca", dep: "gaiolas", aves: ["calopsita", "agapornis", "periquito"], preco: 289.9, foto: "p-gaiola-classica.jpg", desc: "Gaiola decorativa com teto em cúpula e bandeja removível.", opcoes: ["Média", "Grande"] },
-  { id: "gaiola-periquito", nome: "Gaiola para periquitos", dep: "gaiolas", aves: ["periquito"], preco: 169.9, foto: "p-gaiola-periquito.jpg", desc: "Grade fina, dois poleiros e comedouros laterais.", opcoes: ["Nº 3", "Nº 4"] },
-  { id: "gaiola-pequenos", nome: "Gaiola para canário e mandarim", dep: "gaiolas", aves: ["canario", "mandarim"], preco: 139.9, foto: "p-gaiola-pequenos.jpg", desc: "Leve e arejada, com espaço para voos curtos.", opcoes: ["Simples", "Com ninho"] },
-  { id: "viveiro-papagaio", nome: "Viveiro para papagaio", dep: "gaiolas", aves: ["papagaio"], preco: 899.9, foto: "p-viveiro-papagaio.jpg", desc: "Viveiro reforçado com rodinhas e teto que vira poleiro.", opcoes: ["Médio", "Grande"] },
-  { id: "ninho-madeira", nome: "Ninho de madeira", dep: "ninhos", aves: ["agapornis", "calopsita", "periquito"], preco: 59.9, foto: "p-ninho-madeira.jpg", desc: "Caixa-ninho de madeira com entrada redonda e tampa de inspeção.", opcoes: ["Agapornis", "Calopsita"] },
-  { id: "poleiro-natural", nome: "Poleiro de galho natural", dep: "poleiros", aves: ["periquito", "canario", "mandarim", "calopsita"], preco: 19.9, foto: "p-poleiro-natural.jpg", desc: "Galho natural com espessuras variadas, bom para os pés.", opcoes: ["20 cm", "30 cm"] },
-  { id: "poleiro-arara", nome: "Poleiro de madeira para arara", dep: "poleiros", aves: ["papagaio"], preco: 79.9, foto: "p-poleiro-arara.jpg", desc: "Madeira maciça e resistente para aves grandes.", opcoes: ["40 cm", "60 cm"] },
-  { id: "balanco", nome: "Balanço com brinquedo", dep: "brinquedos", aves: ["agapornis", "periquito", "calopsita"], preco: 27.9, foto: "p-balanco.jpg", desc: "Balanço colorido com peças de madeira para bicar.", opcoes: ["Pequeno", "Médio"] },
-  { id: "poleiro-balanco", nome: "Poleiro balanço para jandaia", dep: "brinquedos", aves: ["agapornis", "calopsita"], preco: 39.9, foto: "p-poleiro-balanco.jpg", desc: "Poleiro que balança, para exercitar e distrair.", opcoes: ["Único"] }
+// Corredores (rolagem horizontal): atalhos para a loja. filtro = departamento ou "torneio".
+const CORREDORES = [
+  { nome: "Alimentação das aves", texto: "Misturas, extrusados e farinhadas Nutripássaros, Sellecta e Alcon, além de minerais e vitaminas Avitrin.", filtro: "aves", fotos: ["prod-sellecta-extrusado-calopsita-natural-com-frutas-50.jpg", "a-17052115.jpg"] },
+  { nome: "Linha torneio", texto: "Para o passarinheiro: curió, coleiro, trinca-ferro, bicudo e azulão. Alimento de torneio, ninhos e gaiolas de madeira.", filtro: "torneio", fotos: ["prod-alcon-club-curio-325gr.jpg", "prod-gaiola-amansadeira-torneio.jpg"] },
+  { nome: "Gaiolas", texto: "Madeira, arame zincado e epóxi: do canário ao coelho, com 20 modelos para escolher.", filtro: "gaiolas", fotos: ["prod-gaiola-amansadeira-torneio.jpg", "a-16147936.jpg"] },
+  { nome: "Cães", texto: "Rações Golden, Premier, Special Dog e mais, sachês, petiscos, antipulgas, higiene e brinquedos.", filtro: "caes", fotos: ["pet-cao.jpg", "galeria-cao.jpg"] },
+  { nome: "Gatos", texto: "Rações para castrados e filhotes, sachês Whiskas, areia e higiene, antipulgas e brinquedos.", filtro: "gatos", fotos: ["pet-gato.jpg", "galeria-gato.jpg"] },
+  { nome: "Pequenos pets", texto: "Roedores, coelhos, peixes, jabutis e tartarugas: ração, forração, aquário e acessórios.", filtro: "roedores", fotos: ["viva-mini-coelho.jpg", "viva-hamster-sirio-ou-chines.jpg"] }
 ];
 
-// EXEMPLO: serviços do agendamento. Confirmar com o cliente o que ele oferece.
+// EXEMPLO: serviços do agendamento. Banho e tosa é real (site atual); tipos e tempos, confirmar com o cliente.
 const SERVICOS = [
-  { nome: "Corte de unhas", info: "Rápido e com cuidado", tempo: "15 min" },
-  { nome: "Consultoria de gaiola e alimentação", info: "A gente monta o enxoval certo para a sua ave", tempo: "30 min" },
-  { nome: "Visita para conhecer as aves", info: "Venha escolher com calma", tempo: "30 min" }
+  { nome: "Banho", info: "Cães e gatos, com secagem e perfume", tempo: "1 h" },
+  { nome: "Banho e tosa", info: "Tosa na máquina ou na tesoura", tempo: "1 h 30" },
+  { nome: "Tosa higiênica", info: "Patas, barriga e rostinho", tempo: "40 min" }
 ];
 const HORAS = ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"];
 
 const GALERIA = [
-  ["a-1316295.jpg", "Arara-canindé"], ["a-30518529.jpg", "Casal de agapornis"], ["a-6398822.jpg", "Canário"],
-  ["a-11961251.jpg", "Calopsita no viveiro"], ["a-13550346.jpg", "Periquitos"], ["a-17892832.jpg", "Arara-vermelha"],
-  ["video", "Espaço para o vídeo da loja"], ["a-8838179.jpg", "Periquito na mão"]
+  ["a-1316295.jpg", "Arara-canindé"], ["a-30518529.jpg", "Casal de agapornis"], ["galeria-cao.jpg", "Cachorro feliz depois do banho"],
+  ["a-11961251.jpg", "Calopsita no viveiro"], ["galeria-gato.jpg", "Gatinho"], ["a-17892832.jpg", "Arara-vermelha"],
+  ["video", "Espaço para o vídeo da loja"], ["galeria-cao2.jpg", "Cachorro descansando"]
 ];
 
 /* ---------- utilidades ---------- */
@@ -169,40 +181,41 @@ document.addEventListener("pointerdown", e => {
   }
 })();
 
-/* ---------- espécies: filtram a loja ---------- */
-let aveFiltro = null;
-(function especies() {
+/* ---------- qual é o seu pet: filtra a loja pelo departamento ---------- */
+const LOJA_ITENS = PRODUTOS.filter(p => p.dep !== "vivos");
+(function pets() {
   const lista = $("#especies-lista");
-  lista.innerHTML = ESPECIES.map(e => {
-    const n = PRODUTOS.filter(p => p.aves.includes(e.id)).length;
-    return `<button class="especie" data-ave="${e.id}"><span class="bola"><img src="${e.foto}" alt="${e.nome}" loading="lazy" width="150" height="150"></span>${e.nome}<small>${n} produtos</small></button>`;
+  lista.innerHTML = PETS.map(e => {
+    const n = LOJA_ITENS.filter(p => p.dep === e.id || (e.id === "aves" && p.dep === "gaiolas")).length;
+    return `<button class="especie" data-pet="${e.id}"><span class="bola"><img src="${e.foto}" alt="${e.nome}" loading="lazy" width="150" height="150"></span>${e.nome}<small>${n} produtos</small></button>`;
   }).join("");
   lista.addEventListener("click", ev => {
     const b = ev.target.closest(".especie"); if (!b) return;
-    aveFiltro = aveFiltro === b.dataset.ave ? null : b.dataset.ave;
-    $$(".especie").forEach(x => x.classList.toggle("ativa", x.dataset.ave === aveFiltro));
-    desenharLoja();
-    if (aveFiltro) $("#loja").scrollIntoView({ behavior: semMovimento ? "auto" : "smooth" });
+    irParaLoja(b.dataset.pet);
   });
 })();
+function irParaLoja(filtro) {
+  depFiltro = filtro; subFiltro = null; limite = POR_PAGINA;
+  $$(".especie").forEach(x => x.classList.toggle("ativa", x.dataset.pet === filtro));
+  desenharPilulas(); desenharLoja();
+  $("#loja").scrollIntoView({ behavior: semMovimento ? "auto" : "smooth" });
+}
 
 /* ---------- corredores: rolagem vertical vira voo horizontal ---------- */
 (function corredores() {
   const trilho = $("#corredores-trilho");
-  trilho.innerHTML = DEPARTAMENTOS.map((d, i) => `
+  trilho.innerHTML = CORREDORES.map((d, i) => `
     <article class="corredor">
       <div>
         <span class="corredor-num">0${i + 1}</span>
         <h3>${d.nome}</h3>
         <p>${d.texto}</p>
-        <button class="btn btn-sol" data-dep="${d.id}">Ver ${d.nome.toLowerCase()}</button>
+        <button class="btn btn-sol" data-dep="${d.filtro}">Ver ${d.nome.toLowerCase()}</button>
       </div>
       <div class="corredor-fotos"><img src="${d.fotos[0]}" alt="${d.nome}" loading="lazy" width="500" height="600"><img src="${d.fotos[1]}" alt="" loading="lazy" width="300" height="300"></div>
     </article>`).join("");
   trilho.addEventListener("click", e => {
-    const b = e.target.closest("[data-dep]"); if (!b) return;
-    depFiltro = b.dataset.dep; desenharPilulas(); desenharLoja();
-    $("#loja").scrollIntoView({ behavior: semMovimento ? "auto" : "smooth" });
+    const b = e.target.closest("[data-dep]"); if (b) irParaLoja(b.dataset.dep);
   });
   if (semMovimento) return;
   const sec = $("#corredores"), ave = $("#voo-ave"), voo = $(".voo");
@@ -222,45 +235,82 @@ let aveFiltro = null;
   addEventListener("resize", mover); mover();
 })();
 
+/* ---------- animais vivos: só na loja física ---------- */
+(function vivos() {
+  const lista = PRODUTOS.filter(p => p.dep === "vivos");
+  $("#vivos-lista").innerHTML = lista.map(p => {
+    const foto = "viva-" + p.id + ".jpg";
+    return `<article class="vivo">
+      <div class="vivo-foto${["agapornis", "periquito-australiano", "calopsita-comum"].includes(p.id) ? " recorte" : ""}"><img src="${foto}" alt="${p.nome}" loading="lazy" width="400" height="300"></div>
+      <h3>${p.nome}</h3>
+      <p class="vivo-preco">${reais(p.preco)}</p>
+      <a class="btn btn-linha" href="${whats(`Olá, ${LOJA.curto}! Vi no site: ${p.nome}. Tem disponível para eu conhecer na loja?`)}" target="_blank" rel="noopener">Consultar disponibilidade</a>
+    </article>`;
+  }).join("");
+})();
+
 /* ---------- loja ---------- */
-let depFiltro = "todos", busca = "";
+const POR_PAGINA = 24;
+let depFiltro = "todos", subFiltro = null, busca = "", limite = POR_PAGINA;
+const nomeFiltro = id => id === "todos" ? "Tudo" : id === "torneio" ? "Linha torneio" : (DEPARTAMENTOS.find(d => d.id === id) || {}).nome || id;
 function desenharPilulas() {
-  const deps = [{ id: "todos", nome: "Tudo" }, ...DEPARTAMENTOS];
+  const deps = [{ id: "todos", nome: "Tudo" }, ...DEPARTAMENTOS, { id: "torneio", nome: "Linha torneio" }];
   $("#pilulas").innerHTML = deps.map(d => `<button class="pilula ${d.id === depFiltro ? "ativa" : ""}" data-dep="${d.id}" aria-pressed="${d.id === depFiltro}"><span>${d.nome}</span></button>`).join("");
+  // subcategorias do departamento escolhido
+  const subs = [...new Set(LOJA_ITENS.filter(p => p.dep === depFiltro && p.sub).map(p => p.sub))].sort();
+  const box = $("#subpilulas");
+  box.hidden = subs.length < 2;
+  box.innerHTML = subs.map(s => `<button class="sub ${s === subFiltro ? "ativa" : ""}" data-sub="${s}" aria-pressed="${s === subFiltro}">${s}</button>`).join("");
 }
 $("#pilulas").addEventListener("click", e => {
   const b = e.target.closest(".pilula"); if (!b) return;
-  depFiltro = b.dataset.dep; desenharPilulas(); desenharLoja();
+  depFiltro = b.dataset.dep; subFiltro = null; limite = POR_PAGINA;
+  $$(".especie").forEach(x => x.classList.toggle("ativa", x.dataset.pet === depFiltro));
+  desenharPilulas(); desenharLoja();
 });
-$("#busca").addEventListener("input", e => { busca = e.target.value.trim().toLowerCase(); desenharLoja(); });
+$("#subpilulas").addEventListener("click", e => {
+  const b = e.target.closest(".sub"); if (!b) return;
+  subFiltro = subFiltro === b.dataset.sub ? null : b.dataset.sub; limite = POR_PAGINA;
+  desenharPilulas(); desenharLoja();
+});
+$("#busca").addEventListener("input", e => { busca = e.target.value.trim().toLowerCase(); limite = POR_PAGINA; desenharLoja(); });
+$("#ver-mais").addEventListener("click", () => { limite += POR_PAGINA; desenharLoja(true); });
 const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const nomeDep = id => (DEPARTAMENTOS.find(d => d.id === id) || {}).nome || "";
 
-function desenharLoja() {
-  const lista = PRODUTOS.filter(p =>
-    (depFiltro === "todos" || p.dep === depFiltro) &&
-    (!aveFiltro || p.aves.includes(aveFiltro)) &&
-    (!busca || norm(p.nome + " " + p.desc).includes(norm(busca))));
-  const nomeAve = aveFiltro && ESPECIES.find(e => e.id === aveFiltro).nome;
+function filtrados() {
+  return LOJA_ITENS.filter(p =>
+    (depFiltro === "todos" || (depFiltro === "torneio" ? p.torneio : p.dep === depFiltro)) &&
+    (!subFiltro || p.sub === subFiltro) &&
+    (!busca || norm(p.nome + " " + p.marca + " " + p.sub + " " + nomeDep(p.dep)).includes(norm(busca))));
+}
+function desenharLoja(maisItens) {
+  const todos = filtrados(), lista = todos.slice(0, limite);
   const fa = $("#filtro-ave");
-  fa.hidden = !aveFiltro;
-  if (aveFiltro) fa.innerHTML = `Mostrando para: ${nomeAve} <button type="button" id="limpa-ave">limpar ×</button>`;
-  $("#grade").innerHTML = lista.map(p => {
-    const dep = DEPARTAMENTOS.find(d => d.id === p.dep).nome;
-    return `<article class="produto" data-id="${p.id}" tabindex="0" aria-label="${p.nome}">
-      <div class="produto-foto"><img src="${p.foto}" alt="${p.nome}" loading="lazy" width="400" height="400"><span class="selo-ave">${p.aves.map(a => ESPECIES.find(e => e.id === a).nome.split(" ")[0]).slice(0, 2).join(" · ")}</span></div>
-      <div class="produto-info"><small>${dep}</small><h3>${p.nome}</h3>
+  fa.hidden = false;
+  fa.innerHTML = `${todos.length} ${todos.length === 1 ? "produto" : "produtos"}${depFiltro !== "todos" ? ` em ${nomeFiltro(depFiltro)}${subFiltro ? " · " + subFiltro : ""}` : ""}${depFiltro !== "todos" || busca ? ` <button type="button" id="limpa-ave">limpar ×</button>` : ""}`;
+  const ja = maisItens ? $$(".produto").length : 0;
+  const html = lista.slice(ja).map(p => `<article class="produto" data-id="${p.id}" tabindex="0" aria-label="${p.nome}">
+      <div class="produto-foto"><img src="${p.foto}" alt="${p.nome}" loading="lazy" width="400" height="400"><span class="selo-ave">${p.sub || nomeDep(p.dep)}</span>${p.estoque === "pronta" ? `<span class="selo-estoque">Pronta entrega</span>` : ""}</div>
+      <div class="produto-info"><small>${nomeDep(p.dep)}${p.marca ? " · " + p.marca : ""}</small><h3>${p.nome}</h3>
         <div class="produto-linha"><span class="preco">${reais(p.preco)}</span><button class="add-rapido" data-add="${p.id}" aria-label="Adicionar ${p.nome}">+</button></div>
-      </div></article>`;
-  }).join("");
-  $("#vazio").hidden = lista.length > 0;
-  $$(".produto").forEach((el, i) => setTimeout(() => el.classList.add("visivel"), 40 * i));
+      </div></article>`).join("");
+  if (maisItens) $("#grade").insertAdjacentHTML("beforeend", html); else $("#grade").innerHTML = html;
+  $("#vazio").hidden = todos.length > 0;
+  $("#ver-mais").hidden = lista.length >= todos.length;
+  $("#ver-mais").textContent = `Ver mais ${Math.min(POR_PAGINA, todos.length - lista.length)} produtos`;
+  $$(".produto:not(.visivel)").forEach((el, i) => setTimeout(() => el.classList.add("visivel"), 40 * Math.min(i, 12)));
 }
 document.addEventListener("click", e => {
-  if (e.target.id === "limpa-ave") { aveFiltro = null; $$(".especie").forEach(x => x.classList.remove("ativa")); desenharLoja(); }
+  if (e.target.id === "limpa-ave") {
+    depFiltro = "todos"; subFiltro = null; busca = ""; $("#busca").value = ""; limite = POR_PAGINA;
+    $$(".especie").forEach(x => x.classList.remove("ativa")); desenharPilulas(); desenharLoja();
+  }
 });
+const acharProduto = id => PRODUTOS.find(x => x.id === id);
 $("#grade").addEventListener("click", e => {
   const add = e.target.closest("[data-add]");
-  if (add) { e.stopPropagation(); const p = PRODUTOS.find(x => x.id === add.dataset.add); adicionar(p, p.opcoes[0], 1, add); return; }
+  if (add) { e.stopPropagation(); adicionar(acharProduto(add.dataset.add), 1, add); return; }
   const card = e.target.closest(".produto"); if (card) abrirProduto(card.dataset.id);
 });
 $("#grade").addEventListener("keydown", e => {
@@ -268,29 +318,25 @@ $("#grade").addEventListener("keydown", e => {
 });
 
 /* ---------- produto aberto ---------- */
-let atual = null, qtd = 1, opcao = null, ultimoFoco = null;
+let atual = null, qtd = 1, ultimoFoco = null;
 function abrirProduto(id) {
-  atual = PRODUTOS.find(p => p.id === id); qtd = 1; opcao = atual.opcoes[0]; ultimoFoco = document.activeElement;
+  atual = acharProduto(id); qtd = 1; ultimoFoco = document.activeElement;
   $("#mp-img").src = atual.foto; $("#mp-img").alt = atual.nome;
-  $("#mp-dep").textContent = DEPARTAMENTOS.find(d => d.id === atual.dep).nome;
-  $("#mp-nome").textContent = atual.nome; $("#mp-desc").textContent = atual.desc;
-  $("#mp-ideal").textContent = "Ideal para: " + atual.aves.map(a => ESPECIES.find(e => e.id === a).nome).join(", ");
-  desenharOpcoes(); atualizarModal();
+  $("#mp-dep").textContent = nomeDep(atual.dep) + (atual.sub ? " · " + atual.sub : "");
+  $("#mp-nome").textContent = atual.nome; $("#mp-desc").textContent = atual.desc || "Fale com a gente no WhatsApp para saber mais sobre este produto.";
+  $("#mp-ideal").innerHTML = `${atual.marca ? `<span>Marca: <strong>${atual.marca}</strong></span>` : ""}<span>Cód. ${atual.cod}</span><span class="estoque ${atual.estoque}">${atual.estoque === "pronta" ? "Pronta entrega" : "Sob encomenda · 3 dias úteis"}</span>`;
+  atualizarModal();
   $("#modal-produto").hidden = false; document.body.classList.add("travado");
   $("#modal-produto .fechar").focus();
-}
-function desenharOpcoes() {
-  $("#mp-opcoes").innerHTML = atual.opcoes.map(o => `<button type="button" class="${o === opcao ? "ativa" : ""}" data-op="${o}">${o}</button>`).join("");
 }
 function atualizarModal() { $("#mp-qtd").textContent = qtd; $("#mp-preco").textContent = reais(atual.preco * qtd); }
 function fecharProduto() {
   $("#modal-produto").hidden = true; document.body.classList.remove("travado");
   if (ultimoFoco) ultimoFoco.focus();
 }
-$("#mp-opcoes").addEventListener("click", e => { const b = e.target.closest("[data-op]"); if (b) { opcao = b.dataset.op; desenharOpcoes(); } });
 $("#mp-menos").addEventListener("click", () => { qtd = Math.max(1, qtd - 1); atualizarModal(); });
 $("#mp-mais").addEventListener("click", () => { qtd++; atualizarModal(); });
-$("#mp-add").addEventListener("click", e => { adicionar(atual, opcao, qtd, e.currentTarget); fecharProduto(); });
+$("#mp-add").addEventListener("click", e => { adicionar(atual, qtd, e.currentTarget); fecharProduto(); });
 $$("[data-fechar]").forEach(b => b.addEventListener("click", fecharProduto));
 // Lupa: a foto do produto acompanha o dedo ou o mouse
 const mpFoto = $("#mp-img");
@@ -302,15 +348,14 @@ mpFoto.addEventListener("pointermove", e => {
 mpFoto.addEventListener("pointerleave", () => { mpFoto.style.transform = ""; });
 
 /* ---------- carrinho ---------- */
-let carrinho = guarda.ler("birds-carrinho", []);
-function adicionar(p, op, q, origem) {
-  const chave = p.id + "|" + op;
-  const ja = carrinho.find(i => i.chave === chave);
-  if (ja) ja.qtd += q; else carrinho.push({ chave, id: p.id, op, qtd: q });
+let carrinho = guarda.ler("bird-carrinho", []).filter(i => acharProduto(i.id));
+function adicionar(p, q, origem) {
+  const ja = carrinho.find(i => i.id === p.id);
+  if (ja) ja.qtd += q; else carrinho.push({ id: p.id, qtd: q });
   salvarCarrinho(); voarPena(origem);
   toast(`${p.nome} no pedido`);
 }
-function salvarCarrinho() { guarda.salvar("birds-carrinho", carrinho); desenharCarrinho(); }
+function salvarCarrinho() { guarda.salvar("bird-carrinho", carrinho); desenharCarrinho(); }
 function voarPena(origem) {
   const alvo = $("#abrir-carrinho");
   if (!origem || semMovimento) { alvo.classList.add("pulou"); setTimeout(() => alvo.classList.remove("pulou"), 600); return; }
@@ -331,21 +376,21 @@ function voarPena(origem) {
 function desenharCarrinho() {
   const n = carrinho.reduce((s, i) => s + i.qtd, 0);
   const cont = $("#contador"); cont.hidden = n === 0; cont.textContent = n;
-  const total = carrinho.reduce((s, i) => s + PRODUTOS.find(p => p.id === i.id).preco * i.qtd, 0);
+  const total = carrinho.reduce((s, i) => s + acharProduto(i.id).preco * i.qtd, 0);
   $("#total").textContent = reais(total); $("#pg-total").textContent = reais(total);
   $("#carrinho-pe").hidden = n === 0;
   $("#carrinho-itens").innerHTML = n === 0
     ? `<div class="carrinho-vazio"><img src="logo.png" alt="" width="120" height="120">Seu pedido está vazio.<br>Escolha algo na loja.</div>`
     : carrinho.map(i => {
-      const p = PRODUTOS.find(x => x.id === i.id);
-      return `<div class="item"><img src="${p.foto}" alt=""><div><h4>${p.nome}</h4><small>${i.op} · ${reais(p.preco * i.qtd)}</small></div>
-        <div class="qtd"><button data-menos="${i.chave}" aria-label="Menos">−</button><span>${i.qtd}</span><button data-mais="${i.chave}" aria-label="Mais">+</button></div></div>`;
+      const p = acharProduto(i.id);
+      return `<div class="item"><img src="${p.foto}" alt=""><div><h4>${p.nome}</h4><small>${reais(p.preco)} cada · ${reais(p.preco * i.qtd)}</small></div>
+        <div class="qtd"><button data-menos="${i.id}" aria-label="Menos">−</button><span>${i.qtd}</span><button data-mais="${i.id}" aria-label="Mais">+</button></div></div>`;
     }).join("");
 }
 $("#carrinho-itens").addEventListener("click", e => {
   const m = e.target.closest("[data-menos]"), p = e.target.closest("[data-mais]");
-  if (m) { const i = carrinho.find(x => x.chave === m.dataset.menos); i.qtd--; if (i.qtd <= 0) carrinho = carrinho.filter(x => x !== i); salvarCarrinho(); }
-  if (p) { carrinho.find(x => x.chave === p.dataset.mais).qtd++; salvarCarrinho(); }
+  if (m) { const i = carrinho.find(x => x.id === m.dataset.menos); i.qtd--; if (i.qtd <= 0) carrinho = carrinho.filter(x => x !== i); salvarCarrinho(); }
+  if (p) { carrinho.find(x => x.id === p.dataset.mais).qtd++; salvarCarrinho(); }
 });
 $("#abrir-carrinho").addEventListener("click", () => {
   $("#carrinho").hidden = false; $("#pagamento").hidden = true; document.body.classList.add("travado");
@@ -356,9 +401,9 @@ $$("[data-fechar-c]").forEach(b => b.addEventListener("click", fecharCarrinho));
 $("#enviar-pedido").addEventListener("click", () => {
   const nome = $("#c-nome").value.trim();
   const entrega = $("input[name=entrega]:checked").value;
-  const linhas = carrinho.map(i => { const p = PRODUTOS.find(x => x.id === i.id); return `• ${i.qtd}x ${p.nome} (${i.op}) = ${reais(p.preco * i.qtd)}`; });
+  const linhas = carrinho.map(i => { const p = acharProduto(i.id); return `• ${i.qtd}x ${p.nome} (cód. ${p.cod}) = ${reais(p.preco * i.qtd)}`; });
   const total = $("#total").textContent;
-  const msg = `Olá, Birds! Quero fazer um pedido pelo site:\n\n${linhas.join("\n")}\n\nTotal: ${total}\nComo receber: ${entrega}${nome ? `\nNome: ${nome}` : ""}`;
+  const msg = `Olá, ${LOJA.curto}! Quero fazer um pedido pelo site:\n\n${linhas.join("\n")}\n\nTotal: ${total}\nComo receber: ${entrega}${nome ? `\nNome: ${nome}` : ""}`;
   window.open(whats(msg), "_blank", "noopener");
 });
 $("#pagar-online").addEventListener("click", () => { $("#carrinho-pe").hidden = true; $("#pagamento").hidden = false; });
@@ -388,7 +433,7 @@ let ag = { servico: 0, dia: null, hora: null };
   $("#form-agendar").addEventListener("submit", e => {
     e.preventDefault();
     if (!ag.dia || !ag.hora) { toast("Escolha o dia e o horário"); return; }
-    const msg = `Olá, Birds! Quero agendar pelo site:\n\nServiço: ${SERVICOS[ag.servico].nome}\nDia: ${ag.diaSem} ${ag.dia}\nHorário: ${ag.hora}\nNome: ${$("#ag-nome").value.trim()}${$("#ag-ave").value.trim() ? `\nAve: ${$("#ag-ave").value.trim()}` : ""}`;
+    const msg = `Olá, ${LOJA.curto}! Quero agendar pelo site:\n\nServiço: ${SERVICOS[ag.servico].nome}\nDia: ${ag.diaSem} ${ag.dia}\nHorário: ${ag.hora}\nNome: ${$("#ag-nome").value.trim()}${$("#ag-ave").value.trim() ? `\nPet: ${$("#ag-ave").value.trim()}` : ""}\nUnidade: ${$("#ag-unidade").value}`;
     window.open(whats(msg), "_blank", "noopener");
   });
 })();
@@ -411,11 +456,26 @@ let ag = { servico: 0, dia: null, hora: null };
 /* ---------- contato ---------- */
 $("#form-contato").addEventListener("submit", e => {
   e.preventDefault();
-  const msg = `Olá, Birds! Sou ${$("#ct-nome").value.trim()}.\nAssunto: ${$("#ct-assunto").value}\n\n${$("#ct-msg").value.trim()}`;
+  const msg = `Olá, ${LOJA.curto}! Sou ${$("#ct-nome").value.trim()}.\nAssunto: ${$("#ct-assunto").value}\n\n${$("#ct-msg").value.trim()}`;
   window.open(whats(msg), "_blank", "noopener");
 });
 (function horario() {
   $("#horario-texto").textContent = LOJA.horarioTexto;
+  $("#entrega-texto").textContent = LOJA.entrega;
+  $("#tel-texto").textContent = LOJA.telefone; $("#tel-texto").href = "tel:+55" + LOJA.telefone.replace(/\D/g, "");
+  $("#whats-texto").textContent = LOJA.whatsappTexto;
+  $("#email-texto").textContent = LOJA.email; $("#email-texto").href = "mailto:" + LOJA.email;
+  $("#ag-unidade").innerHTML = UNIDADES.map(u => `<option>${u.nome}</option>`).join("");
+  // abas das duas lojas: trocam o mapa
+  const abas = $("#unidades"), mapa = $("#mapa-frame");
+  const mostrar = i => {
+    $$("button", abas).forEach((b, j) => { b.classList.toggle("ativa", i === j); b.setAttribute("aria-pressed", i === j); });
+    mapa.src = "https://maps.google.com/maps?q=" + encodeURIComponent(UNIDADES[i].mapa) + "&z=15&output=embed";
+    mapa.title = "Mapa da loja " + UNIDADES[i].nome;
+  };
+  abas.innerHTML = UNIDADES.map((u, i) => `<button type="button" data-u="${i}">Loja ${u.nome}</button>`).join("");
+  abas.addEventListener("click", e => { const b = e.target.closest("[data-u]"); if (b) mostrar(+b.dataset.u); });
+  mostrar(0);
   const agora = new Date(), h = LOJA.horario[agora.getDay()], hora = agora.getHours() + agora.getMinutes() / 60;
   const aberto = h && hora >= h[0] && hora < h[1];
   const el = $("#aberto"); el.textContent = aberto ? "Aberto agora" : "Fechado agora"; el.className = "aberto " + (aberto ? "sim" : "nao");

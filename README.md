@@ -1,21 +1,28 @@
-# Birds Pet Shop · Site com Catálogo (protótipo DERS)
+# Bird Pet Shop & Avicultura · Site com Catálogo (protótipo DERS)
 
 Conceito: "abrir as asas". Uma pena cai, vira a logo e o site se abre como duas asas. Céu azul da logo, verde e amarelo do papagaio, penas flutuando.
 
-## O que é real
-- Nome, logo, WhatsApp (11) 97766-4646, Instagram @petshopbird, cidade (São Paulo/SP).
-- Especialista em aves ("menos avestruz"), mais de 10 anos, loja física: tudo do formulário.
+Em 25/11/2026 o protótipo recebeu os dados reais do site atual da loja (birdpetshop.com.br): ver `analise-site-original.md` e a pasta `site-original/` no projeto.
 
-## O que é exemplo e precisa trocar
-- Produtos, preços e opções (array PRODUTOS no script.js).
-- Fotos: banco de imagens Pexels (licença livre). Trocar pelas fotos profissionais que o cliente disse ter.
+## O que é real
+- Nome (Bird Pet Shop & Avicultura), razão social e CNPJ, logo, Instagram @petshopbird, e-mail, telefone (11) 96035-8956.
+- Duas lojas: Ipiranga e Vila Independência (o mapa busca pelo nome e bairro).
+- Banho e tosa; delivery em São Paulo, ABCD e arredores.
+- Catálogo completo: 250 produtos com nome, código, marca, preço, estoque e descrição (`produtos.js`) e as fotos do próprio site (`prod-*.jpg`).
+- Animais vivos (calopsita, agapórnis, periquito, mini coelho, hamster, betta) com preço, só para conhecer na loja (`viva-*.jpg`).
+- Linha torneio (curió, coleiro, trinca-ferro, bicudo, azulão) marcada nos produtos.
+
+## O que é exemplo e precisa confirmar ou trocar
+- WhatsApp: o formulário trouxe (11) 97766-4646 e o site atual mostra (11) 96035-8956. Hoje o botão usa o do formulário (LOJA.whatsapp).
 - Horário de funcionamento (LOJA.horario e LOJA.horarioTexto).
-- Serviços do agendamento (SERVICOS) e horários (HORAS).
-- Endereço do mapa (hoje mostra só São Paulo).
+- Tipos e tempos do banho e tosa (SERVICOS) e horários (HORAS).
+- Endereço exato das duas lojas (UNIDADES).
+- Fotos de cães, gatos, banho e tosa e das aves no topo: banco Pexels (licença livre). Trocar pelas fotos das lojas.
 - Vídeo da galeria (espaço marcado) e depoimentos (espaço marcado).
-- Pagamento online: tela de exemplo; no site final liga com um meio de pagamento (Mercado Pago, por exemplo).
-- A logo veio pequena (150 px): pedir o arquivo original em PNG ou SVG.
+- Pagamento online: tela de exemplo.
 
 ## Onde mexer
-- Conteúdo: LOJA, FOTOS_TOPO, ESPECIES, DEPARTAMENTOS, PRODUTOS, SERVICOS, GALERIA no topo do script.js.
-- Cores e fontes: variáveis no :root do styles.css (com versão para modo escuro).
+- Catálogo: `produtos.js` (dep = departamento, sub = subcategoria, estoque = "pronta" ou "encomenda", torneio = linha torneio).
+- Conteúdo: LOJA, UNIDADES, FOTOS_TOPO, PETS, DEPARTAMENTOS, CORREDORES, SERVICOS, GALERIA no topo do `script.js`.
+- Cores e fontes: variáveis no :root do `styles.css` (com versão para modo escuro).
+- Link: https://birds-pet-shop.vercel.app (repositório kamillythaynara9-ai/birds-pet-shop).
