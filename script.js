@@ -5,7 +5,7 @@
 const LOJA = {
   nome: "Bird Pet Shop & Avicultura",
   curto: "Bird",
-  // WhatsApp e telefone do site atual da loja (birdpetshop.com.br): o mesmo número.
+  // WhatsApp do site atual da loja (birdpetshop.com.br). Só o WhatsApp aparece no site.
   whatsapp: "5511960358956",
   whatsappTexto: "(11) 96035-8956",
   telefone: "(11) 96035-8956",
@@ -209,10 +209,35 @@ document.addEventListener("pointerdown", e => {
 const LOJA_ITENS = PRODUTOS.filter(p => p.dep !== "vivos");
 (function pets() {
   const lista = $("#especies-lista");
-  lista.innerHTML = PETS.map(e => {
+  const itens = PETS.map(e => {
     const n = LOJA_ITENS.filter(p => p.dep === e.id || (e.id === "aves" && p.dep === "gaiolas")).length;
     return `<button class="especie" data-pet="${e.id}"><span class="bola"><img src="${e.foto}" alt="${e.nome}" loading="lazy" width="150" height="150"></span>${e.nome}<small>${n} produtos</small></button>`;
   }).join("");
+  // carrossel: a lista vai duas vezes para girar sem emenda (a cópia fica escondida do leitor de tela)
+  lista.innerHTML = itens + `<div class="especies-copia" aria-hidden="true">${itens.replace(/<button /g, '<button tabindex="-1" ')}</div>`;
+  if (!semMovimento) {
+    let parado = false, volta = null, pos = 0;
+    const pausar = () => { parado = true; clearTimeout(volta); };
+    const seguir = () => { clearTimeout(volta); volta = setTimeout(() => { parado = false; pos = lista.scrollLeft; }, 2500); };
+    lista.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") pausar(); });
+    lista.addEventListener("pointerleave", seguir);
+    lista.addEventListener("pointerdown", pausar);
+    lista.addEventListener("pointerup", seguir);
+    lista.addEventListener("touchstart", pausar, { passive: true });
+    lista.addEventListener("touchend", seguir, { passive: true });
+    lista.addEventListener("focusin", pausar);
+    lista.addEventListener("focusout", seguir);
+    const girar = () => {
+      const metade = lista.scrollWidth / 2;
+      if (!parado && metade > 0) {
+        pos += .45;
+        if (pos >= metade) pos -= metade;
+        lista.scrollLeft = pos;
+      } else if (parado && lista.scrollLeft >= metade) { lista.scrollLeft -= metade; }
+      requestAnimationFrame(girar);
+    };
+    requestAnimationFrame(girar);
+  }
   lista.addEventListener("click", ev => {
     const b = ev.target.closest(".especie"); if (!b) return;
     irParaLoja(b.dataset.pet);
@@ -487,7 +512,6 @@ $("#form-contato").addEventListener("submit", e => {
 (function horario() {
   $("#horario-texto").textContent = LOJA.horarioTexto;
   $("#entrega-texto").textContent = LOJA.entrega;
-  $("#tel-texto").textContent = LOJA.telefone; $("#tel-texto").href = "tel:+55" + LOJA.telefone.replace(/\D/g, "");
   $("#whats-texto").textContent = LOJA.whatsappTexto;
   $("#email-texto").textContent = LOJA.email; $("#email-texto").href = "mailto:" + LOJA.email;
   // abas das duas lojas: trocam o mapa
