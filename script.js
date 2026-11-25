@@ -179,10 +179,10 @@ document.addEventListener("pointerdown", e => {
 (function colunas() {
   const box = $("#hero-colunas");
   const embaralhado = [...FOTOS_TOPO].sort(() => Math.random() - .5);
-  for (let c = 0; c < 5; c++) {
+  for (let c = 0; c < 3; c++) {
     const col = document.createElement("div"); col.className = "coluna";
     const trilha = document.createElement("div"); trilha.className = "coluna-trilha";
-    const fotos = embaralhado.filter((_, i) => i % 5 === c);
+    const fotos = embaralhado.filter((_, i) => i % 3 === c);
     const html = fotos.map(([src, nome], i) =>
       `<figure><img src="${src}" alt="${nome}" ${c === 1 && i === 0 ? "" : 'loading="lazy"'} width="300" height="400"><figcaption>${nome}</figcaption></figure>`).join("");
     trilha.innerHTML = html + html; // duas vezes para o laço sem emenda
