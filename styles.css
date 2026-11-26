@@ -693,3 +693,18 @@ body.menu-aberto .whats-flutuante, body.menu-aberto .cookies { visibility: hidde
 
 /* animais vivos no computador: os cartões ocupam a largura toda */
 @media (min-width: 861px) { .vivos-lista { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; } }
+
+/* corredores no computador: arrastar com o mouse */
+.corredores-livre .corredores-trilho { cursor: grab; }
+.corredores-livre .corredores-trilho.arrastando { cursor: grabbing; user-select: none; -webkit-user-select: none; }
+.corredores-livre .corredores-trilho.arrastando .corredor { pointer-events: none; }
+.corredores-trilho img { -webkit-user-drag: none; }
+@media (min-width: 861px) { .corredores-livre .corredores-cabeca { padding-top: 4.5rem; } .corredores-livre .corredores-fixo { padding-bottom: 2rem; } }
+
+/* celular: o toque não deixa cartão nem botão "presos" no efeito de passar o mouse (era o + torto) */
+@media (hover: none) {
+  .btn:hover, .produto:hover, .add-rapido:hover, .vivo:hover, .sub:hover, .selos li:hover, .whats-flutuante:hover, .fechar:hover,
+  .especie:hover .bola, .marca:hover img, .corredor:hover .corredor-fotos img:first-child, .corredor:hover .corredor-fotos img:last-child, .produto:hover .produto-foto img,
+  .vivo:hover .vivo-foto img, .galeria-grade button:hover img, .coluna figure:hover img { transform: none; }
+  .produto:hover, .vivo:hover { box-shadow: var(--sombra); }
+}
