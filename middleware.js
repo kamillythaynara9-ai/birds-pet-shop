@@ -13,6 +13,12 @@ const DESCRICAO = 'Prévia exclusiva preparada pela DERS. Toque para abrir.';
 const LIVRES = new Set(['/og.jpg', '/favicon.png', '/favicon.ico', '/robots.txt']);
 const ROBOS = /whatsapp|facebookexternalhit|facebot|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|skypeuripreview|pinterest|redditbot|applebot|googlebot|bingbot|embedly|vkshare/i;
 const COOKIE = 'ders_previa';
+// Acesso da dona: entra uma vez com o usuário e a senha do sistema DERS e o site fica liberado
+// naquele aparelho, sem tempo e sem marca d'água. Links dos clientes não são gastos por ela.
+const DONOS = ['ders2026@ders.com.br'];
+const DOMINIO_LOGIN = 'ders.com.br';
+const COOKIE_DONA = 'ders_dona';
+const DIAS_DONA = 180;
 
 export const config = { matcher: '/:path*' };
 
@@ -34,8 +40,8 @@ function lerCookie(req, nome) {
   return m ? m[1] : null;
 }
 
-async function sessaoValida(req, host) {
-  const v = lerCookie(req, COOKIE);
+async function sessaoValida(req, host, nome) {
+  const v = lerCookie(req, nome || COOKIE);
   if (!v || v.indexOf('.') < 0) return null;
   const [corpo, sig] = v.split('.');
   if (!igual(sig, await assinar(corpo))) return null;
@@ -48,20 +54,50 @@ async function sessaoValida(req, host) {
 
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
-function pagina(status, titulo, texto) {
+function pagina(status, titulo, texto, extra) {
   const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${esc(titulo)}</title>
 <style>:root{--f:#f6f4fb;--c:#fff;--t:#1d1830;--s:#6b6580;--a:#6d3fd1;--b:#e6e1f2}
 @media (prefers-color-scheme:dark){:root{--f:#120f1c;--c:#1c1729;--t:#f1edfb;--s:#a9a2bd;--a:#a98bff;--b:#2c2540}}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px 16px;background:var(--f);color:var(--t);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .c{max-width:420px;width:100%;background:var(--c);border:1px solid var(--b);border-radius:20px;padding:36px 28px;text-align:center}
+.f{display:grid;gap:10px;margin-top:20px;text-align:left}.f label{font-size:.85rem;font-weight:600}.f input{width:100%;font:inherit;padding:12px 14px;border-radius:12px;border:1.5px solid var(--b);background:var(--f);color:var(--t)}.f button{font:inherit;font-weight:700;padding:12px;border:0;border-radius:12px;background:var(--a);color:#fff;cursor:pointer}.e{color:#d33;font-size:.9rem}
 .i{width:56px;height:56px;border-radius:50%;margin:0 auto 18px;display:grid;place-items:center;background:color-mix(in srgb,var(--a) 14%,transparent);color:var(--a)}
 h1{font-size:1.35rem;margin:0 0 10px}p{margin:0;color:var(--s)}small{display:block;margin-top:26px;color:var(--s);font-size:.78rem;letter-spacing:.04em}</style></head>
 <body><main class="c"><div class="i"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
-<h1>${esc(titulo)}</h1><p>${esc(texto)}</p><small>Prévia protegida · DERS</small></main></body></html>`;
+<h1>${esc(titulo)}</h1><p>${esc(texto)}</p>${extra || ''}<small>Prévia protegida · DERS${extra ? '' : ' · <a href="/__ders/entrar" style="color:inherit">Área da DERS</a>'}</small></main></body></html>`;
   return new Response(html, { status, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex, nofollow' } });
 }
 const EXPIROU = () => pagina(410, 'Esta prévia expirou', 'O link de prévia vale só por alguns minutos. Para ver de novo, peça um novo link a quem te enviou.');
 const INVALIDO = () => pagina(403, 'Prévia protegida', 'Este site só abre pelo link de prévia enviado para você.');
+
+function telaEntrar(erro) {
+  return pagina(erro ? 401 : 200, 'Área da DERS', 'Entre com o usuário e a senha do sistema DERS para ver este site sempre que quiser, neste aparelho.',
+    `<form class="f" method="post" action="/__ders/entrar">${erro ? `<p class="e">${esc(erro)}</p>` : ''}
+<label>Usuário<input name="usuario" autocomplete="username" autocapitalize="none" required></label>
+<label>Senha<input name="senha" type="password" autocomplete="current-password" required></label>
+<button type="submit">Entrar</button></form>`);
+}
+
+async function entrar(req, url, host) {
+  if (req.method !== 'POST') return telaEntrar();
+  let usuario = '', senha = '';
+  try { const f = await req.formData(); usuario = String(f.get('usuario') || '').trim().toLowerCase(); senha = String(f.get('senha') || ''); } catch (e) { }
+  const email = usuario.indexOf('@') > 0 ? usuario : usuario + '@' + DOMINIO_LOGIN;
+  if (!usuario || !senha || DONOS.indexOf(email) < 0) return telaEntrar('Usuário ou senha incorretos.');
+  try {
+    const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST', headers: { apikey: SUPABASE_KEY, 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password: senha })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.user || String(d.user.email || '').toLowerCase() !== email) return telaEntrar('Usuário ou senha incorretos.');
+  } catch (e) { return telaEntrar('Não deu para entrar agora. Tente de novo.'); }
+  const seg = DIAS_DONA * 86400, corpo = b64(JSON.stringify({ h: host, e: Date.now() + seg * 1000, n: '' }));
+  const h = new Headers({ location: '/', 'cache-control': 'no-store' });
+  h.append('set-cookie', `${COOKIE_DONA}=${corpo}.${await assinar(corpo)}; Path=/; Max-Age=${seg}; HttpOnly; Secure; SameSite=Lax`);
+  h.append('set-cookie', `ders_vis=; Path=/; Max-Age=0; Secure; SameSite=Lax`);
+  return new Response(null, { status: 303, headers: h });
+}
 
 function previaRobo(url) {
   const img = url.origin + '/og.jpg';
@@ -78,6 +114,14 @@ export default async function middleware(req) {
 
   // Robôs de prévia (WhatsApp, Instagram...) só recebem título e imagem, sem gastar o tempo da pessoa.
   if (ROBOS.test(ua)) return previaRobo(url);
+  if (url.pathname === '/__ders/entrar') return entrar(req, url, host);
+
+  // A dona vê sempre, sem tempo e sem marca d'água, e não gasta o link do cliente.
+  if (await sessaoValida(req, host, COOKIE_DONA)) {
+    if (!codigo) return seguir();
+    url.searchParams.delete('acesso');
+    return new Response(null, { status: 303, headers: { location: url.pathname + url.search, 'cache-control': 'no-store' } });
+  }
 
   if (codigo) {
     let r;
