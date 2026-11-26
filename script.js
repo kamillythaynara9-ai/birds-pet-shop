@@ -124,7 +124,11 @@ const PENA_SVG = cor => `<svg viewBox="0 0 60 160" aria-hidden="true"><path d="M
 
 /* ---------- intro: pena cai, logo pousa, asas abrem (até ~2,6 s) ---------- */
 (function intro() {
-  const el = $("#intro");
+  // celular: intro nova (revoada + papagaio pousando); computador: a das asas
+  const celular = matchMedia("(max-width: 860px)").matches;
+  const outra = celular ? $("#intro") : $("#intro-m");
+  outra.classList.add("fim");
+  const el = celular ? $("#intro-m") : $("#intro");
   if (sessao.ler("birds-intro") || semMovimento) { el.classList.add("fim"); return; }
   document.body.classList.add("travado");
   let saiu = false;
@@ -133,11 +137,11 @@ const PENA_SVG = cor => `<svg viewBox="0 0 60 160" aria-hidden="true"><path d="M
     sessao.salvar("birds-intro", "1");
     el.classList.add("abrindo");
     document.body.classList.remove("travado");
-    setTimeout(() => el.classList.add("fim"), 800);
+    setTimeout(() => el.classList.add("fim"), 900);
   };
   el.addEventListener("click", sair);
-  setTimeout(sair, 1800);
-  setTimeout(sair, 2600); // garantia: nunca trava
+  setTimeout(sair, celular ? 2700 : 1800);
+  setTimeout(sair, 3600); // garantia: nunca trava
 })();
 
 /* ---------- WhatsApp em todos os links data-whats ---------- */
