@@ -1,6 +1,8 @@
-// DERS · Prévia protegida (link que expira)
-// Roda na Vercel antes de qualquer arquivo do site: sem link válido, nem a página,
-// nem as fotos, nem o vídeo são entregues.
+// DERS · Proteção dos sites (protótipo, portfólio, no ar)
+// Roda na Vercel antes de qualquer arquivo do site. O modo vem do sistema DERS (modo_site):
+//   prototipo: sem link válido, nem a página, nem as fotos são entregues;
+//   portfolio: aberto para todos, com marca d'água DERS e barreiras contra copiar (protecao.js);
+//   livre:     site no ar do cliente, sem nenhuma proteção.
 // Link da pessoa: https://SITE/?acesso=CODIGO (gerado no sistema DERS).
 // O relógio começa na primeira abertura; quem confere é o Supabase (abrir_link_previa).
 
@@ -40,6 +42,24 @@ function lerCookie(req, nome) {
   const m = (req.headers.get('cookie') || '').match(new RegExp('(?:^|;\\s*)' + nome + '=([^;]+)'));
   return m ? m[1] : null;
 }
+
+// Modo do site, guardado por 30 s para não consultar o banco a cada foto.
+const MODOS = new Set(['prototipo', 'portfolio', 'livre']);
+const modoCache = new Map();
+async function modoDoSite(host) {
+  const c = modoCache.get(host) || {};
+  if (c.v && Date.now() - c.t < 30000) return c.v;
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/modo_site', {
+      method: 'POST', headers: { apikey: SUPABASE_KEY, 'content-type': 'application/json' }, body: JSON.stringify({ p_site: host })
+    });
+    const v = r.ok ? await r.json() : null;
+    if (MODOS.has(v)) { modoCache.set(host, { v, t: Date.now() }); return v; }
+  } catch (e) { }
+  return c.v || 'prototipo'; // sem resposta: mantém o último modo; se não houver, protege
+}
+
+function json(d) { return new Response(JSON.stringify(d), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } }); }
 
 async function sessaoValida(req, host, nome) {
   const v = lerCookie(req, nome || COOKIE);
@@ -81,20 +101,32 @@ function telaEntrar(erro) {
 
 async function entrar(req, url, host) {
   if (req.method !== 'POST') return telaEntrar();
-  let usuario = '', senha = '';
-  try { const f = await req.formData(); usuario = String(f.get('usuario') || '').trim().toLowerCase(); senha = String(f.get('senha') || ''); } catch (e) { }
-  const email = usuario.indexOf('@') > 0 ? usuario : usuario + '@' + DOMINIO_LOGIN;
-  if (!usuario || !senha || DONOS.indexOf(email) < 0) return telaEntrar('Usuário ou senha incorretos.');
+  let usuario = '', senha = '', token = '', volta = '/';
   try {
-    const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
-      method: 'POST', headers: { apikey: SUPABASE_KEY, 'content-type': 'application/json' },
-      body: JSON.stringify({ email, password: senha })
-    });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok || !d.user || String(d.user.email || '').toLowerCase() !== email) return telaEntrar('Usuário ou senha incorretos.');
+    const f = await req.formData();
+    usuario = String(f.get('usuario') || '').trim().toLowerCase(); senha = String(f.get('senha') || '');
+    token = String(f.get('token') || ''); volta = String(f.get('volta') || '/');
+  } catch (e) { }
+  if (!/^\/(?!\/)/.test(volta)) volta = '/';
+  try {
+    if (token) {
+      // Vindo do botão "Abrir o site" do sistema DERS: confere a sessão dela no Supabase.
+      const r = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: { apikey: SUPABASE_KEY, authorization: 'Bearer ' + token } });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || DONOS.indexOf(String(d.email || '').toLowerCase()) < 0) return telaEntrar('Entre com o usuário e a senha do sistema.');
+    } else {
+      const email = usuario.indexOf('@') > 0 ? usuario : usuario + '@' + DOMINIO_LOGIN;
+      if (!usuario || !senha || DONOS.indexOf(email) < 0) return telaEntrar('Usuário ou senha incorretos.');
+      const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+        method: 'POST', headers: { apikey: SUPABASE_KEY, 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password: senha })
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.user || String(d.user.email || '').toLowerCase() !== email) return telaEntrar('Usuário ou senha incorretos.');
+    }
   } catch (e) { return telaEntrar('Não deu para entrar agora. Tente de novo.'); }
   const seg = DIAS_DONA * 86400, corpo = b64(JSON.stringify({ h: host, e: Date.now() + seg * 1000, n: '' }));
-  const h = new Headers({ location: '/', 'cache-control': 'no-store' });
+  const h = new Headers({ location: volta, 'cache-control': 'no-store' });
   h.append('set-cookie', `${COOKIE_DONA}=${corpo}.${await assinar(corpo)}; Path=/; Max-Age=${seg}; HttpOnly; Secure; SameSite=Lax`);
   h.append('set-cookie', `ders_vis=; Path=/; Max-Age=0; Secure; SameSite=Lax`);
   return new Response(null, { status: 303, headers: h });
@@ -113,12 +145,27 @@ export default async function middleware(req) {
   const ua = req.headers.get('user-agent') || '';
   const codigo = url.searchParams.get('acesso');
 
+  if (url.pathname === '/__ders/entrar') return entrar(req, url, host);
+  const modo = await modoDoSite(host);
+  const dona = await sessaoValida(req, host, COOKIE_DONA);
+  if (url.pathname === '/__ders/modo') {
+    if (dona || modo === 'livre') return json({ modo: 'livre' });
+    if (modo === 'portfolio') return json({ modo });
+    const s = await sessaoValida(req, host);
+    return json(s ? { modo, n: s.n || '', e: s.e } : { modo, bloqueado: true });
+  }
+  if (modo === 'livre' || modo === 'portfolio') {
+    if (!codigo) return seguir();
+    url.searchParams.delete('acesso');
+    return new Response(null, { status: 303, headers: { location: url.pathname + url.search, 'cache-control': 'no-store' } });
+  }
+
+  // Daqui para baixo: modo protótipo.
   // Robôs de prévia (WhatsApp, Instagram...) só recebem título e imagem, sem gastar o tempo da pessoa.
   if (ROBOS.test(ua)) return previaRobo(url);
-  if (url.pathname === '/__ders/entrar') return entrar(req, url, host);
 
   // A dona vê sempre, sem tempo e sem marca d'água, e não gasta o link do cliente.
-  if (await sessaoValida(req, host, COOKIE_DONA)) {
+  if (dona) {
     if (!codigo) return seguir();
     url.searchParams.delete('acesso');
     return new Response(null, { status: 303, headers: { location: url.pathname + url.search, 'cache-control': 'no-store' } });
