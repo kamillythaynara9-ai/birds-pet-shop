@@ -268,9 +268,8 @@ function irParaLoja(filtro) {
   });
   if (semMovimento) return;
   const sec = $("#corredores"), ave = $("#voo-ave"), voo = $(".voo"), feito = $("#voo-feito"), dica = $("#voo-dica");
-  // celular e tablet: o corredor desliza com o dedo para o lado e a página segue rolando normal para baixo
-  const toque = matchMedia("(max-width: 860px), (pointer: coarse)");
-  const livre = () => toque.matches;
+  // o corredor desliza para o lado (dedo, mouse ou trackpad) e a página segue rolando normal para baixo
+  const livre = () => true;
   let pedido = false, ultimo = null, frente = 1, calma = null;
   const progresso = () => {
     if (livre()) {
@@ -307,8 +306,35 @@ function irParaLoja(filtro) {
   addEventListener("scroll", pedir, { passive: true });
   trilho.addEventListener("scroll", pedir, { passive: true });
   addEventListener("resize", pedir);
-  if (toque.addEventListener) toque.addEventListener("change", aplicarModo);
   aplicarModo();
+  // no computador dá para arrastar os corredores com o mouse
+  let arrasto = null;
+  trilho.addEventListener("dragstart", e => e.preventDefault());
+  trilho.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "mouse" || e.button !== 0 || e.target.closest("button, a")) return;
+    arrasto = { x: e.clientX, sl: trilho.scrollLeft };
+    trilho.style.scrollSnapType = "none"; trilho.style.scrollBehavior = "auto";
+  });
+  addEventListener("pointermove", e => {
+    if (!arrasto) return;
+    const dx = e.clientX - arrasto.x;
+    if (Math.abs(dx) > 4) trilho.classList.add("arrastando");
+    trilho.scrollLeft = arrasto.sl - dx;
+  });
+  addEventListener("pointerup", e => {
+    if (!arrasto) return;
+    const dx = e.clientX - arrasto.x, inicio = arrasto.sl;
+    arrasto = null; trilho.classList.remove("arrastando");
+    // solta no próximo corredor na direção do arrasto
+    const pad = parseFloat(getComputedStyle(trilho).scrollPaddingLeft) || 0;
+    const pontos = $$(".corredor", trilho).map(c => c.offsetLeft - trilho.offsetLeft - pad);
+    let alvo = trilho.scrollLeft;
+    if (dx < -40) alvo = pontos.find(x => x > inicio + 5) ?? pontos[pontos.length - 1];
+    else if (dx > 40) alvo = [...pontos].reverse().find(x => x < inicio - 5) ?? 0;
+    trilho.style.scrollBehavior = "";
+    trilho.scrollTo({ left: alvo, behavior: "smooth" });
+    setTimeout(() => { trilho.style.scrollSnapType = ""; }, 600);
+  });
   // arrastar o passarinho (dedo ou mouse) leva a pessoa pelos corredores
   let pega = null;
   ave.addEventListener("pointerdown", e => {
