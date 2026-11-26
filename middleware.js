@@ -10,7 +10,8 @@ const SUPABASE_KEY = 'sb_publishable_LH0JvrC3pToxvJ-wnpLm4Q_Bvu4FDVK'; // chave 
 const SEGREDO = '-CSDClFIvsA2xNyNZ4YbVVVVW2fzCYY1N3SsSTAFv-mC';
 const TITULO = 'Prévia do site · Bird Pet Shop'; // aparece na prévia do link no WhatsApp
 const DESCRICAO = 'Prévia exclusiva preparada pela DERS. Toque para abrir.';
-const LIVRES = new Set(['/og.jpg', '/favicon.png', '/favicon.ico', '/robots.txt']);
+// video.mp4 é o vídeo de venda: o link dele vai na mensagem ao cliente, então fica aberto.
+const LIVRES = new Set(['/video.mp4', '/og.jpg', '/favicon.png', '/favicon.ico', '/robots.txt']);
 const ROBOS = /whatsapp|facebookexternalhit|facebot|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|skypeuripreview|pinterest|redditbot|applebot|googlebot|bingbot|embedly|vkshare/i;
 const COOKIE = 'ders_previa';
 // Acesso da dona: entra uma vez com o usuário e a senha do sistema DERS e o site fica liberado
