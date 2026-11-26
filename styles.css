@@ -708,3 +708,61 @@ body.menu-aberto .whats-flutuante, body.menu-aberto .cookies { visibility: hidde
   .vivo:hover .vivo-foto img, .galeria-grade button:hover img, .coluna figure:hover img { transform: none; }
   .produto:hover, .vivo:hover { box-shadow: var(--sombra); }
 }
+
+/* ---------- intro do celular (26/11): revoada de penas e o papagaio da Bird pousando no nome ---------- */
+.intro-m {
+  position: fixed; inset: 0; z-index: 101; overflow: hidden; cursor: pointer;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, #d5eefd 0%, #eef8ff 48%, #fff7e2 100%);
+  transition: transform .85s var(--suave), border-radius .85s var(--suave);
+}
+.intro-m.fim { display: none; }
+.im-sol { position: absolute; width: 520px; height: 520px; right: -220px; top: -220px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(253, 206, 2, .55), rgba(253, 206, 2, .18) 40%, transparent 68%);
+  animation: im-sol 3s ease-in-out infinite alternate; }
+@keyframes im-sol { to { transform: scale(1.12); } }
+.im-nuvem { position: absolute; height: 60px; border-radius: 999px; background: #fff; filter: blur(6px); opacity: .85; }
+.im-nuvem-1 { width: 200px; top: 16%; left: -60px; animation: im-nuvem 9s linear infinite; }
+.im-nuvem-2 { width: 150px; bottom: 20%; right: -40px; opacity: .6; animation: im-nuvem 11s linear infinite reverse; }
+@keyframes im-nuvem { to { transform: translateX(120px); } }
+.im-penas { position: absolute; inset: 0; pointer-events: none; }
+.im-pena { position: absolute; top: -14%; left: var(--x); width: var(--w); height: calc(var(--w) * 2.75); color: var(--c);
+  filter: drop-shadow(0 6px 6px rgba(3, 64, 106, .18)); animation: im-cai var(--d) linear var(--a) infinite; }
+@keyframes im-cai {
+  0% { transform: translate(0, 0) rotate(var(--r)); }
+  25% { transform: translate(26px, 32vh) rotate(calc(var(--r) + 40deg)); }
+  50% { transform: translate(-22px, 64vh) rotate(calc(var(--r) - 20deg)); }
+  75% { transform: translate(18px, 96vh) rotate(calc(var(--r) + 30deg)); }
+  100% { transform: translate(-6px, 128vh) rotate(var(--r)); }
+}
+.im-marca { position: relative; width: min(86vw, 380px); aspect-ratio: 600 / 257; }
+.im-nome { position: absolute; left: 46.67%; top: 0; width: 53.33%; height: auto;
+  clip-path: inset(0 100% 0 0); animation: im-nome .6s 1.05s var(--suave) forwards; }
+@keyframes im-nome { to { clip-path: inset(0 0 0 0); } }
+.im-ave-voo { position: absolute; left: 0; top: 0; width: 46.67%; transform-origin: 60% 80%;
+  animation: im-chega 1.15s .15s var(--suave) both; }
+.im-ave { width: 100%; height: auto; transform-origin: 55% 85%; animation: im-bate .16s ease-in-out 7 alternate .15s, im-pousa .5s 1.25s var(--mola); }
+@keyframes im-chega {
+  0% { transform: translate(-90vw, 55vh) rotate(-28deg) scale(.55); }
+  45% { transform: translate(-30vw, -18vh) rotate(-8deg) scale(.8); }
+  75% { transform: translate(4vw, -6vh) rotate(6deg) scale(1.02); }
+  100% { transform: none; }
+}
+@keyframes im-bate { from { transform: scaleY(1) rotate(-3deg); } to { transform: scaleY(.9) rotate(4deg); } }
+@keyframes im-pousa { 0% { transform: scale(1.08, .9); } 60% { transform: scale(.96, 1.06) rotate(-3deg); } 100% { transform: none; } }
+.im-explode { position: absolute; left: 24%; top: 42%; width: 0; height: 0; }
+.im-faisca { position: absolute; width: 16px; height: 44px; margin: -22px 0 0 -8px; color: var(--c); opacity: 0;
+  animation: im-faisca 1s 1.45s var(--suave) forwards; }
+@keyframes im-faisca {
+  0% { transform: translate(0, 0) scale(.2) rotate(0); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translate(var(--bx), var(--by)) scale(1) rotate(var(--r)); opacity: 0; }
+}
+.im-toque { position: absolute; bottom: max(28px, env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center;
+  font-size: .78rem; color: var(--texto-suave); opacity: 0; animation: im-aparece .6s 1.6s forwards; }
+@keyframes im-aparece { to { opacity: .75; } }
+.intro-m.abrindo { transform: translateY(-104%); border-radius: 0 0 50% 50% / 0 0 22% 22%; }
+.intro-m.abrindo .im-marca { transition: transform .6s var(--suave), opacity .5s; transform: translateY(-40px) scale(.9); opacity: 0; }
+@media (prefers-color-scheme: dark) { .intro-m { background: linear-gradient(180deg, #cfe9fb 0%, #eaf6ff 48%, #fff3d6 100%); } }
+@media (min-width: 861px) { .intro-m { display: none; } }
+@media (max-width: 860px) { .intro { display: none; } }
