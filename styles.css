@@ -764,5 +764,5 @@ body.menu-aberto .whats-flutuante, body.menu-aberto .cookies { visibility: hidde
 .intro-m.abrindo { transform: translateY(-104%); border-radius: 0 0 50% 50% / 0 0 22% 22%; }
 .intro-m.abrindo .im-marca { transition: transform .6s var(--suave), opacity .5s; transform: translateY(-40px) scale(.9); opacity: 0; }
 @media (prefers-color-scheme: dark) { .intro-m { background: linear-gradient(180deg, #cfe9fb 0%, #eaf6ff 48%, #fff3d6 100%); } }
-@media (min-width: 861px) { .intro-m { display: none; } }
-@media (max-width: 860px) { .intro { display: none; } }
+.intro { display: none; }
+@media (min-width: 861px) { .im-marca { width: min(60vw, 560px); } .im-faisca { width: 22px; height: 60px; margin: -30px 0 0 -11px; } }
