@@ -129,12 +129,15 @@ const PENA_SVG = cor => `<svg viewBox="0 0 60 160" aria-hidden="true"><path d="M
   const outra = celular ? $("#intro") : $("#intro-m");
   outra.classList.add("fim");
   const el = celular ? $("#intro-m") : $("#intro");
-  if (sessao.ler("birds-intro") || semMovimento) { el.classList.add("fim"); return; }
+  // a intro toca sempre que a página inicial é aberta ou atualizada (só não toca se o link já aponta para uma seção, ex.: #loja)
+  const emSecao = location.hash.length > 1;
+  if (semMovimento || emSecao) { el.classList.add("fim"); return; }
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  scrollTo(0, 0);
   document.body.classList.add("travado");
   let saiu = false;
   const sair = () => {
     if (saiu) return; saiu = true;
-    sessao.salvar("birds-intro", "1");
     el.classList.add("abrindo");
     document.body.classList.remove("travado");
     setTimeout(() => el.classList.add("fim"), 900);
