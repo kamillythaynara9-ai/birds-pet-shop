@@ -124,11 +124,12 @@ const PENA_SVG = cor => `<svg viewBox="0 0 60 160" aria-hidden="true"><path d="M
 
 /* ---------- intro: pena cai, logo pousa, asas abrem (até ~2,6 s) ---------- */
 (function intro() {
-  // celular: intro nova (revoada + papagaio pousando); computador: a das asas
-  const celular = matchMedia("(max-width: 860px)").matches;
+  // intro: revoada de penas e o papagaio pousando no nome
+  const celular = true; // a intro nova (revoada + papagaio) vale para celular e computador
   const outra = celular ? $("#intro") : $("#intro-m");
   outra.classList.add("fim");
   const el = celular ? $("#intro-m") : $("#intro");
+  const aviso = $(".im-toque"); if (aviso && matchMedia("(hover: hover)").matches) aviso.textContent = "Clique para entrar";
   // a intro toca sempre que a página inicial é aberta ou atualizada (só não toca se o link já aponta para uma seção, ex.: #loja)
   const emSecao = location.hash.length > 1;
   if (semMovimento || emSecao) { el.classList.add("fim"); return; }
