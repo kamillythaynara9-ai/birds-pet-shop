@@ -268,16 +268,22 @@ function irParaLoja(filtro) {
   });
   if (semMovimento) return;
   const sec = $("#corredores"), ave = $("#voo-ave"), voo = $(".voo"), feito = $("#voo-feito"), dica = $("#voo-dica");
+  // celular e tablet: o corredor desliza com o dedo para o lado e a página segue rolando normal para baixo
+  const toque = matchMedia("(max-width: 860px), (pointer: coarse)");
+  const livre = () => toque.matches;
   let pedido = false, ultimo = null, frente = 1, calma = null;
   const progresso = () => {
+    if (livre()) {
+      const max = trilho.scrollWidth - trilho.clientWidth;
+      return { p: max > 0 ? Math.min(1, Math.max(0, trilho.scrollLeft / max)) : 0 };
+    }
     const total = sec.offsetHeight - innerHeight;
     return { total, p: Math.min(1, Math.max(0, -sec.getBoundingClientRect().top / total)) };
   };
   const mover = () => {
     pedido = false;
     const { p } = progresso();
-    const max = trilho.scrollWidth - innerWidth;
-    trilho.style.transform = `translate3d(${-p * max}px,0,0)`;
+    if (!livre()) trilho.style.transform = `translate3d(${-p * (trilho.scrollWidth - innerWidth)}px,0,0)`;
     const largura = voo.clientWidth - ave.offsetWidth;
     // voa para o lado em que a pessoa está indo, batendo as asas mais rápido enquanto anda
     if (ultimo !== null && Math.abs(p - ultimo) > .0005) {
@@ -292,8 +298,17 @@ function irParaLoja(filtro) {
     feito.style.width = (p * 100) + "%";
     if (p > .04) dica.classList.add("some");
   };
-  addEventListener("scroll", () => { if (!pedido) { pedido = true; requestAnimationFrame(mover); } }, { passive: true });
-  addEventListener("resize", mover); mover();
+  const pedir = () => { if (!pedido) { pedido = true; requestAnimationFrame(mover); } };
+  const aplicarModo = () => {
+    sec.classList.toggle("corredores-livre", livre());
+    if (livre()) trilho.style.transform = "";
+    mover();
+  };
+  addEventListener("scroll", pedir, { passive: true });
+  trilho.addEventListener("scroll", pedir, { passive: true });
+  addEventListener("resize", pedir);
+  if (toque.addEventListener) toque.addEventListener("change", aplicarModo);
+  aplicarModo();
   // arrastar o passarinho (dedo ou mouse) leva a pessoa pelos corredores
   let pega = null;
   ave.addEventListener("pointerdown", e => {
@@ -302,16 +317,20 @@ function irParaLoja(filtro) {
     pega = { id: e.pointerId, dx: e.clientX - r.left };
     ave.setPointerCapture(e.pointerId);
     document.documentElement.style.scrollBehavior = "auto";
+    trilho.style.scrollSnapType = "none"; trilho.style.scrollBehavior = "auto";
   });
   ave.addEventListener("pointermove", e => {
     if (!pega || e.pointerId !== pega.id) return;
     const caixa = voo.getBoundingClientRect();
     const largura = caixa.width - ave.offsetWidth;
     const f = Math.min(1, Math.max(0, (e.clientX - caixa.left - pega.dx) / largura));
-    const { total } = progresso();
-    scrollTo(0, sec.getBoundingClientRect().top + scrollY + f * total);
+    if (livre()) { trilho.scrollLeft = f * (trilho.scrollWidth - trilho.clientWidth); return; }
+    scrollTo(0, sec.getBoundingClientRect().top + scrollY + f * progresso().total);
   });
-  const soltar = () => { pega = null; document.documentElement.style.scrollBehavior = ""; };
+  const soltar = () => {
+    pega = null; document.documentElement.style.scrollBehavior = "";
+    trilho.style.scrollSnapType = ""; trilho.style.scrollBehavior = "";
+  };
   ave.addEventListener("pointerup", soltar);
   ave.addEventListener("pointercancel", soltar);
 })();
@@ -399,9 +418,10 @@ function desenharLoja(maisItens) {
   fa.innerHTML = `${todos.length} ${todos.length === 1 ? "produto" : "produtos"}${depFiltro !== "todos" ? ` em ${nomeFiltro(depFiltro)}${subFiltro ? " · " + subFiltro : ""}` : ""}${depFiltro !== "todos" || busca ? ` <button type="button" id="limpa-ave">limpar ×</button>` : ""}`;
   const ja = maisItens ? $$(".produto").length : 0;
   const html = lista.slice(ja).map(p => `<article class="produto" data-id="${p.id}" tabindex="0" aria-label="${p.nome}">
-      <div class="produto-foto"><img src="${p.foto}" alt="${p.nome}" loading="lazy" width="400" height="400"><span class="selo-ave">${p.sub || nomeDep(p.dep)}</span>${p.estoque === "pronta" ? `<span class="selo-estoque">Pronta entrega</span>` : ""}</div>
+      <div class="produto-foto"><img src="${p.foto}" alt="${p.nome}" loading="lazy" width="400" height="400"><span class="selo-ave">${p.sub || nomeDep(p.dep)}</span></div>
       <div class="produto-info"><small>${nomeDep(p.dep)}${p.marca ? " · " + p.marca : ""}</small><h3>${p.nome}</h3>
-        <div class="produto-linha"><span class="preco">${reais(p.preco)}</span><button class="add-rapido" data-add="${p.id}" aria-label="Adicionar ${p.nome}">+</button></div>
+        <span class="estoque-mini${p.estoque === "pronta" ? " pronta" : ""}">${p.estoque === "pronta" ? "Pronta entrega" : "Sob encomenda"}</span>
+        <div class="produto-linha"><span class="preco">${reais(p.preco)}</span><button class="add-rapido" data-add="${p.id}" aria-label="Adicionar ${p.nome}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button></div>
       </div></article>`).join("");
   if (maisItens) $("#grade").insertAdjacentHTML("beforeend", html); else $("#grade").innerHTML = html;
   $("#vazio").hidden = todos.length > 0;
